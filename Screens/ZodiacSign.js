@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Animated } from 'react-native';
 import ZodiacSignList from '../components/ZodiacSignList'; // Importing the component for listing zodiac signs
 import { responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'; // Handles responsiveness across screen sizes
-import theme from '../theme/styletheme'; // Global theme for consistent styling
+import theme from '../color/style'; // Global theme for consistent styling
+
 
 // ZodiacSignScreen component: Displays zodiac signs and allows user selection
 const ZodiacSignScreen = ({ navigation }) => {
@@ -26,9 +27,9 @@ const ZodiacSignScreen = ({ navigation }) => {
     <View style={styles.container}> {/* Main container that centers content */}
       
       <Image
-        source={require('assets/AstorMatchlogo.png')} // Logo image
+        source={require('vectors/AstorMatchlogo.png')} // Logo image
         style={styles.logo} // Styling for the logo
-        accessibilityLabel="AstroMatch Logo" // For screen readers
+        accessibilityLabel="AstroMatchLogo" // For screen readers
       />
       
       <Text style={styles.header}>Choose Your Zodiac Sign</Text> {/* Header text for the screen */}

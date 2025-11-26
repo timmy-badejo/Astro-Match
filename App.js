@@ -4,13 +4,13 @@ import { ThemeProvider } from 'react-native-elements'; // For theming to keep UI
 import { Nunito_400Regular, useFonts } from '@expo-google-fonts/nunito'; // Importing the Nunito font from Expo
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SignUpScreen from '../screens/SignUpScreen'; // Screen where users input their details
-import ZodiacSignScreen from '../screens/ZodiacSignScreen'; // Screen where users select their zodiac sign
-import CompatibilitySearchScreen from '../screens/CompatibilitySearchScreen'; // Screen to handle compatibility search
-import ResultsScreen from '../screens/ResultsScreen'; // Screen for showing compatibility results
-import ProfileScreen from '../screens/ProfileScreen'; // Screen to display user profile
+import SignUpScreen from '../Screens/SignUp'; // Screen where users input their details
+import ZodiacSignScreen from '../Screens/ZodiacSign'; // Screen where users select their zodiac sign
+import CompatibilitySearchScreen from '../Screens/CompatibilitySearch'; // Screen to handle compatibility search
+import ResultsScreen from '../Screens/Results'; // Screen for showing compatibility results
+import ProfileScreen from '../Screens/Profile'; // Screen to display user profile
 import ZodiacSignList from '../components/ZodiacSignList'; // A component that lists zodiac signs
-import theme from '../theme/styletheme'; // Importing custom theme for consistent styling
+import theme from '../color/style;' // Importing custom theme for consistent styling
 import { Platform as RNPlatform } from 'react-native'; // Platform module for handling platform-specific UI logic
 
 // Creating the stack navigator object for navigation in v6

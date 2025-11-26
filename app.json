@@ -4,9 +4,9 @@
     "slug": "AstroMatch",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/AstorMatchLogo.png",
+    "icon": "./vectors/AstorMatchLogo.png",
     "splash": {
-      "image": "./assets/splash-image.png",
+      "image": "./vectors/splash-image.png",
       "resizeMode": "cover",
       "backgroundColor": "#FFFFFF"
     },
@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "splash": {
-        "image": "./assets/ios-splash.png",
+        "image": "./vectors/ios-splash.png",
         "resizeMode": "cover",
         "backgroundColor": "#FFFFFF"
       }
@@ -29,12 +29,12 @@
       "versionCode": 1,
       "permissions": [],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/AstorMatchLogo.png",
+        "foregroundImage": "./vectors/AstorMatchLogo.png",
         "backgroundColor": "#FFFFFF"
       }
     },
     "web": {
-      "favicon": "./assets/favico.png"
+      "favicon": "./vectors/favico.png"
     },
     "plugins": [
       "expo-font"
