@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "AstroMatch",
+    "slug": "AstroMatch",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/AstorMatchLogo.png",
+    "splash": {
+      "image": "./assets/splash-image.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#FFFFFF"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "splash": {
+        "image": "./assets/ios-splash.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "android": {
+      "package": "com.astromatch",
+      "versionCode": 1,
+      "permissions": [],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/AstorMatchLogo.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favico.png"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
