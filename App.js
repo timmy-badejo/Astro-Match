@@ -4,7 +4,7 @@ import { ThemeProvider } from 'react-native-elements'; // For theming to keep UI
 import { Nunito_400Regular, useFonts } from '@expo-google-fonts/nunito'; // Importing the Nunito font from Expo
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SignUpScreen from '/screens/SignUpScreen'; // Screen where users input their details
+import SignUpScreen from '../screens/SignUpScreen'; // Screen where users input their details
 import ZodiacSignScreen from '../screens/ZodiacSignScreen'; // Screen where users select their zodiac sign
 import CompatibilitySearchScreen from '../screens/CompatibilitySearchScreen'; // Screen to handle compatibility search
 import ResultsScreen from '../screens/ResultsScreen'; // Screen for showing compatibility results

@@ -10,7 +10,7 @@ const ProfileScreen = ({ route, navigation }) => {
   const bio = "Hey, I'm Timmy! I love web development, design, and exploring new tech."; // A short bio about the user
   const username = "timmy-bad"; // Hardcoded username, can be dynamic if needed
   const birthdate = "Jan 27, 1999"; // Birthdate information, can be dynamic if available
-  const profileImage = require('assets/profileimage.png'); // Path to the profile image from local assets (ensure correct path)
+  const profileImage = require('assets/profileimage.jpg'); // Path to the profile image from local assets (ensure correct path)
 
   return (
     <View style={styles.container}> {/* Main container for the profile screen */}
