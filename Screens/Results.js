@@ -1,86 +1,68 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { zodiacSigns } from '../data/zodiacData'; // Import zodiac sign data from the data folder
-
-// ResultsScreen component: Displays compatibility results and insights based on the selected zodiac sign
+import { View, Text, Button, StyleSheet, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { zodiacSigns } from '../data/zodiacData';
+const FAVORITES_KEY = '@astromatch:favorites';
 const ResultsScreen = ({ route, navigation }) => {
-  // Destructure selectedSign from the route parameters (passed from the previous screen)
   const { selectedSign } = route.params || {};
+  if (!selectedSign) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.header}>No sign selected</Text>
+        <Text style={styles.text}>
+          Please go back and choose a zodiac sign before viewing compatibility results.
+        </Text>
+        <Button title="Go Back" onPress={() => navigation.goBack()} />
+      </View>
+    );
+  }
+  const selectedSignDetails = zodiacSigns.find((sign) => sign.name === selectedSign);
+  const compatibleSigns = selectedSignDetails ? selectedSignDetails.compatibleSigns : [];
 
-if (!selectedSign) {
+  const addToFavorites = async () => {
+    try {
+      const stored = await AsyncStorage.getItem(FAVORITES_KEY);
+      const existing = stored ? JSON.parse(stored) : [];
+      if (!existing.includes(selectedSign)) {
+        const updated = [...existing, selectedSign];
+        await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+      }
+      Alert.alert('Saved', `${selectedSign} added to your favorites.`);
+    } catch (e) {
+      console.log(e);
+      Alert.alert('Error', 'Could not save favorite. Please try again.');
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>No zodiac sign selected.</Text>
-      <Button title="Go Back" onPress={() => navigation.goBack()} />
-    </View>
-  );
-}
+      <Text style={styles.header}>Compatibility Results for {selectedSign}</Text>
 
-  // Find the details of the selected zodiac sign from the zodiacSigns array
-  const selectedSignDetails = zodiacSigns.find((sign) => sign.name === selectedSign); // Search for the selected sign in the zodiacSigns data array
-  
-  // Get the list of compatible zodiac signs for the selected sign (if available)
-  const compatibleSigns = selectedSignDetails ? selectedSignDetails.compatibleSigns : []; // If the selected sign exists, get its compatible signs
-
-  return (
-    <View style={styles.container}> {/* Main container to center the content */}
-      {/* Header text displaying selected zodiac sign */}
-      <Text style={styles.header}>Compatibility Results for {selectedSign}</Text> {/* Display the selected zodiac sign in the header */}
-
-      {/* Subheader for compatible signs */}
-      <Text style={styles.subHeader}>Compatible Signs:</Text> {/* Label for compatible signs section */}
-      
-      {/* Display the compatible signs */}
+      <Text style={styles.subHeader}>Compatible Signs:</Text>
       {compatibleSigns.length > 0 ? (
         compatibleSigns.map((sign, index) => (
-          <Text key={index} style={styles.text}>{sign}</Text> // Loop through compatible signs and display them
+          <Text key={index} style={styles.text}>{sign}</Text>
         ))
       ) : (
-        <Text style={styles.text}>No compatibility data available.</Text> // If no compatible signs are found, show a fallback message
+        <Text style={styles.text}>No compatibility data available.</Text>
       )}
 
-      {/* Subheader for compatibility insights */}
-      <Text style={styles.subHeader}>Compatibility Insights:</Text> {/* Label for compatibility insights section */}
-      
-      {/* Provide specific insights based on the selected zodiac sign */}
+      <Text style={styles.subHeader}>Compatibility Insights:</Text>
       <Text style={styles.text}>
-        {selectedSign === 'Aries' ? 'Aries is bold and fiery...' : 'Each sign has unique compatibility traits.'} {/* Display custom insights for Aries or a general message */}
+        {selectedSignDetails?.description ||
+          'Each sign has unique compatibility traits.'}
       </Text>
 
-      {/* Button to navigate to the Profile screen */}
-      <Button 
-        title="View Profile" 
-        onPress={() => navigation.navigate('Profile')} // Navigate to the Profile screen when the button is pressed
+      <Button title="Add to Favorites" onPress={addToFavorites} />
+
+      <View style={{ height: 12 }} />
+
+      <Button
+        title="View Profile"
+        onPress={() => navigation.navigate('Profile', { selectedSign })}
       />
     </View>
   );
 };
 
-// Styles for the ResultsScreen
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, 
-    justifyContent: 'center', // Center content vertically
-    alignItems: 'center', // Center content horizontally
-    padding: 20, // Padding around the content
-    backgroundColor: '#f9f9f9', // Light background color for the screen
-  },
-  header: {
-    fontSize: 24, // Larger font size for the header
-    fontWeight: 'bold', // Bold font for the header
-    marginBottom: 20, // Space below the header
-  },
-  subHeader: {
-    fontSize: 18, // Font size for the subheaders (e.g., "Compatible Signs")
-    fontWeight: 'bold', // Bold font for subheaders to make them stand out
-    marginVertical: 10, // Vertical spacing around subheaders
-  },
-  text: {
-    fontSize: 16, // Standard font size for text
-    marginVertical: 5, // Space between each piece of text
-  },
-});
-
 export default ResultsScreen;
-
-
