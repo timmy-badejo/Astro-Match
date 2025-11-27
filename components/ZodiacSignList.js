@@ -1,49 +1,96 @@
+// components/ZodiacSignList.js
 import React from 'react';
-import { FlatList, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { zodiacSigns } from '../data/zodiacData'; // Import the list of zodiac signs from the data folder
+import {
+  FlatList,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import { zodiacSigns } from '../data/zodiacData'; // Shared zodiac data source
+import theme from '../color/style'; // Use shared theme for colors, spacing, etc.
 
-// ZodiacSignList component: Displays a list of zodiac signs with their names and images.
 const ZodiacSignList = ({ onSelectSign }) => {
-  // Render each item in the list
+  const handlePress = (sign) => {
+    if (onSelectSign) {
+      // Pass the full sign object up to ZodiacSignScreen
+      onSelectSign(sign);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.itemContainer} // Apply styling to the container
-      onPress={() => onSelectSign(item)} // Trigger the onSelectSign function when the item is selected
+      style={styles.card}
+      onPress={() => handlePress(item)}
+      activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={`Select ${item.name}`}
     >
-      {/* Display the zodiac sign image */}
-      <Image source={item.image} style={styles.itemImage} />
-      {/* Display the zodiac sign name */}
-      <Text style={styles.itemText}>{item.name}</Text>
+      <Image source={item.image} style={styles.avatar} />
+
+      <View style={styles.info}>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.dates}>{item.dates}</Text>
+
+        {/* Traits in one line, trimmed if too long */}
+        <Text style={styles.traits} numberOfLines={1}>
+          {item.traits.join(' • ')}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 
   return (
     <FlatList
-      data={zodiacSigns} // The data to display in the list (list of zodiac signs)
-      renderItem={renderItem} // Render each item using the renderItem function
-      keyExtractor={(item) => item.id.toString()} // Ensure each item has a unique key based on its id
+      data={zodiacSigns}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={renderItem}
+      contentContainerStyle={styles.listContent}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      showsVerticalScrollIndicator={false}
     />
   );
 };
 
-// Styles for the ZodiacSignList component
 const styles = StyleSheet.create({
-  itemContainer: {
-    flexDirection: 'row', // Align image and text horizontally
-    padding: 10, // Padding around the items
-    marginVertical: 5, // Vertical margin between items
-    backgroundColor: '#1054BD', // Background color for each item
-    borderRadius: 5, // Rounded corners for the item
-    alignItems: 'center', // Vertically center content within each item
+  listContent: {
+    paddingHorizontal: theme.spacing.medium,
+    paddingVertical: theme.spacing.small,
   },
-  itemImage: {
-    width: 50, // Width of the zodiac sign image
-    height: 50, // Height of the zodiac sign image
-    marginRight: 10, // Space between image and text
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.cardBackground,
+    borderRadius: theme.borderRadius.medium,
+    padding: theme.spacing.medium,
+    minHeight: 72, // Larger tap target
+    ...theme.shadows.light,
   },
-  itemText: {
-    color: 'white', // White text color to contrast with the background
-    fontSize: 18, // Font size for the zodiac sign name
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    marginRight: theme.spacing.medium,
+  },
+  info: {
+    flex: 1,
+  },
+  name: {
+    ...theme.textStyles.header,
+    fontSize: 20,
+    marginBottom: 4,
+  },
+  dates: {
+    ...theme.textStyles.subtitle,
+    marginBottom: 2,
+  },
+  traits: {
+    ...theme.textStyles.body,
+    fontSize: 14,
+  },
+  separator: {
+    height: theme.spacing.small,
   },
 });
 
