@@ -2,14 +2,14 @@
 
 // Helper function to generate image path based on zodiac sign name.
 // This makes it easier to manage images dynamically and keep a consistent naming convention.
-const imagePath = (name) => `assets/${name.toLowerCase()}@300x.png`;
+
 
 // Zodiac signs data including additional properties like traits, dates, and descriptions.
 export const zodiacSigns = [
   {
     id: 1,
     name: 'Aries', // Zodiac sign name
-    image: require(imagePath('Aries')), // Dynamically load image using the helper function
+    image: require(('../vectors/aries@300x.png')), // Dynamically load image using the helper function
     compatibleSigns: ['Leo', 'Sagittarius', 'Gemini', 'Aquarius'], // Compatible signs
     dates: 'March 21 - April 19', // Date range for Aries
     traits: ['Courageous', 'Determined', 'Confident'], // Key traits of Aries
@@ -18,7 +18,7 @@ export const zodiacSigns = [
   {
     id: 2,
     name: 'Taurus',
-    image: require(imagePath('Taurus')),
+    image: require(('../vectors/taurus@300x.png')),
     compatibleSigns: ['Virgo', 'Capricorn', 'Pisces', 'Cancer'],
     dates: 'April 20 - May 20',
     traits: ['Reliable', 'Patient', 'Practical'],
@@ -27,7 +27,7 @@ export const zodiacSigns = [
   {
     id: 3,
     name: 'Gemini',
-    image: require(imagePath('Gemini')),
+    image: require(('../vectors/gemini@300x.png')),
     compatibleSigns: ['Aries', 'Leo', 'Libra', 'Aquarius'],
     dates: 'May 21 - June 20',
     traits: ['Adaptable', 'Curious', 'Outgoing'],
@@ -36,7 +36,7 @@ export const zodiacSigns = [
   {
     id: 4,
     name: 'Cancer',
-    image: require(imagePath('Cancer')),
+    image: require(('../vectors/cancer@300x.png')),
     compatibleSigns: ['Scorpio', 'Pisces', 'Taurus', 'Virgo'],
     dates: 'June 21 - July 22',
     traits: ['Emotional', 'Caring', 'Loyal'],
@@ -45,7 +45,7 @@ export const zodiacSigns = [
   {
     id: 5,
     name: 'Leo',
-    image: require(imagePath('Leo')),
+    image: require(('../vectors/leo@300x.png')),
     compatibleSigns: ['Aries', 'Sagittarius', 'Gemini', 'Aquarius'],
     dates: 'July 23 - August 22',
     traits: ['Generous', 'Loyal', 'Energetic'],
@@ -54,7 +54,7 @@ export const zodiacSigns = [
   {
     id: 6,
     name: 'Virgo',
-    image: require(imagePath('Virgo')),
+    image: require(('../vectors/virgo@300x.png')),
     compatibleSigns: ['Taurus', 'Capricorn', 'Cancer', 'Scorpio'],
     dates: 'August 23 - September 22',
     traits: ['Practical', 'Analytical', 'Modest'],
@@ -63,7 +63,7 @@ export const zodiacSigns = [
   {
     id: 7,
     name: 'Libra',
-    image: require(imagePath('Libra')),
+    image: require(('../vectors/libra@300x.png')),
     compatibleSigns: ['Gemini', 'Aquarius', 'Sagittarius', 'Leo'],
     dates: 'September 23 - October 22',
     traits: ['Charming', 'Diplomatic', 'Fair-minded'],
@@ -72,7 +72,7 @@ export const zodiacSigns = [
   {
     id: 8,
     name: 'Scorpio',
-    image: require(imagePath('Scorpio')),
+    image: require(('../vectors/scorpio@300x.png')),
     compatibleSigns: ['Cancer', 'Pisces', 'Virgo', 'Capricorn'],
     dates: 'October 23 - November 21',
     traits: ['Passionate', 'Resourceful', 'Stubborn'],
@@ -81,7 +81,7 @@ export const zodiacSigns = [
   {
     id: 9,
     name: 'Sagittarius',
-    image: require(imagePath('Sagittarius')),
+    image: require(('../vectors/sagitarius@300x.png')),
     compatibleSigns: ['Aries', 'Leo', 'Libra', 'Aquarius'],
     dates: 'November 22 - December 21',
     traits: ['Optimistic', 'Adventurous', 'Independent'],
@@ -90,7 +90,7 @@ export const zodiacSigns = [
   {
     id: 10,
     name: 'Capricorn',
-    image: require(imagePath('Capricorn')),
+    image: require(('../vectors/capricon@300x.png')),
     compatibleSigns: ['Taurus', 'Virgo', 'Pisces', 'Scorpio'],
     dates: 'December 22 - January 19',
     traits: ['Ambitious', 'Disciplined', 'Patient'],
@@ -99,7 +99,7 @@ export const zodiacSigns = [
   {
     id: 11,
     name: 'Aquarius',
-    image: require(imagePath('Aquarius')),
+    image: require(('../vectors/aquarius@300x.png')),
     compatibleSigns: ['Gemini', 'Libra', 'Sagittarius', 'Leo'],
     dates: 'January 20 - February 18',
     traits: ['Innovative', 'Humanitarian', 'Independent'],
@@ -108,7 +108,7 @@ export const zodiacSigns = [
   {
     id: 12,
     name: 'Pisces',
-    image: require(imagePath('Pisces')),
+    image: require(('../vectors/pisces@300x.png')),
     compatibleSigns: ['Cancer', 'Scorpio', 'Taurus', 'Capricorn'],
     dates: 'February 19 - March 20',
     traits: ['Compassionate', 'Artistic', 'Gentle'],
