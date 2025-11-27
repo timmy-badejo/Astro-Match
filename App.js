@@ -11,8 +11,9 @@ import ZodiacSignScreen from './Screens/ZodiacSign';
 import CompatibilitySearchScreen from './Screens/CompatibilitySearch';
 import ResultsScreen from './Screens/Results';
 import ProfileScreen from './Screens/Profile';
-import FavoritesScreen from './Screens/Favorites';   // ✅ new screen
-import theme from './color/style';                   // ✅ fixed path, no stray ;
+import FavoritesScreen from './Screens/Favorites';
+import theme from './color/style';
+                   
 
 const Stack = createNativeStackNavigator();
 
