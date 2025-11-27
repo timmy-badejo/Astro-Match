@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Picker, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 // SignUpScreen component: Collects the user's name and zodiac sign, then navigates to the next screen
 const SignUpScreen = ({ navigation }) => {
