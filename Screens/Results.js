@@ -15,6 +15,7 @@ if (!selectedSign) {
     </View>
   );
 }
+
   // Find the details of the selected zodiac sign from the zodiacSigns array
   const selectedSignDetails = zodiacSigns.find((sign) => sign.name === selectedSign); // Search for the selected sign in the zodiacSigns data array
   
