@@ -24,15 +24,14 @@
         "backgroundColor": "#FFFFFF"
       }
     },
+    "icon": "./vectors/AstroMatchLogo.png",
     "android": {
-      "package": "com.astromatch",
-      "versionCode": 1,
-      "permissions": [],
-      "adaptiveIcon": {
-        "foregroundImage": "./vectors/AstroMatchLogo.png",
-        "backgroundColor": "#FFFFFF"
-      }
-    },
+    "adaptiveIcon": {
+    "foregroundImage": "./vectors/AstroMatchLogo.png",
+    "backgroundColor": "#FFFFFF"
+  }
+},
+
     "web": {
       "favicon": "./vectors/favico.png"
     },
