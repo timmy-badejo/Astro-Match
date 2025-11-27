@@ -27,9 +27,9 @@ const ZodiacSignScreen = ({ navigation }) => {
     <View style={styles.container}> {/* Main container that centers content */}
       
       <Image
-        source={require('vectors/AstorMatchlogo.png')} // Logo image
+        source={require('../vectors/AstorMatchlogo.png')} // Logo image
         style={styles.logo} // Styling for the logo
-        accessibilityLabel="AstroMatchLogo" // For screen readers
+        accessibilityLabel="AstorMatchlogo" // For screen readers
       />
       
       <Text style={styles.header}>Choose Your Zodiac Sign</Text> {/* Header text for the screen */}
