@@ -26,8 +26,8 @@ const ZodiacSignScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../vectors/AstroMatchLogo.png')}   // ✅ fixed path/name
+      <Image source={require('../vectors/AstroMatchLogo.png')}
+   // ✅ fixed path/name
         style={styles.logo}
         accessibilityLabel="AstroMatch logo"
       />
