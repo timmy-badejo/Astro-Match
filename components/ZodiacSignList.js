@@ -1,4 +1,3 @@
-// components/ZodiacSignList.js
 import React from 'react';
 import {
   FlatList,
@@ -8,33 +7,23 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { zodiacSigns } from '../data/zodiacData'; // Shared zodiac data source
-import theme from '../color/style'; // Use shared theme for colors, spacing, etc.
+import { zodiacSigns } from '../data/zodiacData';
+import theme from '../color/style';
 
 const ZodiacSignList = ({ onSelectSign }) => {
-  const handlePress = (sign) => {
-    if (onSelectSign) {
-      // Pass the full sign object up to ZodiacSignScreen
-      onSelectSign(sign);
-    }
-  };
-
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => handlePress(item)}
+      onPress={() => onSelectSign(item)} // full sign object
       activeOpacity={0.8}
-      accessibilityRole="button"
-      accessibilityLabel={`Select ${item.name}`}
     >
-      <Image source={item.image} style={styles.avatar} />
-
-      <View style={styles.info}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.dates}>{item.dates}</Text>
-
-        {/* Traits in one line, trimmed if too long */}
-        <Text style={styles.traits} numberOfLines={1}>
+      <View style={styles.imageWrapper}>
+        <Image source={item.image} style={styles.itemImage} />
+      </View>
+      <View style={styles.textWrapper}>
+        <Text style={styles.itemName}>{item.name}</Text>
+        <Text style={styles.itemDates}>{item.dates}</Text>
+        <Text numberOfLines={2} style={styles.itemTraits}>
           {item.traits.join(' • ')}
         </Text>
       </View>
@@ -44,10 +33,11 @@ const ZodiacSignList = ({ onSelectSign }) => {
   return (
     <FlatList
       data={zodiacSigns}
-      keyExtractor={(item) => item.id.toString()}
       renderItem={renderItem}
+      keyExtractor={(item) => item.id.toString()}
+      numColumns={2}                    // 2-column grid
+      columnWrapperStyle={styles.row}   // spacing between columns
       contentContainerStyle={styles.listContent}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
       showsVerticalScrollIndicator={false}
     />
   );
@@ -55,44 +45,49 @@ const ZodiacSignList = ({ onSelectSign }) => {
 
 const styles = StyleSheet.create({
   listContent: {
-    paddingHorizontal: theme.spacing.medium,
-    paddingVertical: theme.spacing.small,
+    paddingVertical: 8,
+  },
+  row: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
   },
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flex: 1,
+    marginVertical: 8,
+    marginHorizontal: 4,
     backgroundColor: theme.colors.cardBackground,
     borderRadius: theme.borderRadius.medium,
-    padding: theme.spacing.medium,
-    minHeight: 72, // Larger tap target
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
     ...theme.shadows.light,
   },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    marginRight: theme.spacing.medium,
+  imageWrapper: {
+    marginRight: 10,
   },
-  info: {
+  itemImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  textWrapper: {
     flex: 1,
   },
-  name: {
-    ...theme.textStyles.header,
-    fontSize: 20,
+  itemName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: theme.colors.text,
     marginBottom: 4,
   },
-  dates: {
-    ...theme.textStyles.subtitle,
-    marginBottom: 2,
+  itemDates: {
+    fontSize: 12,
+    color: theme.textStyles.subtitle.color,
+    marginBottom: 4,
   },
-  traits: {
-    ...theme.textStyles.body,
-    fontSize: 14,
-  },
-  separator: {
-    height: theme.spacing.small,
+  itemTraits: {
+    fontSize: 12,
+    color: theme.colors.darkText,
   },
 });
 
 export default ZodiacSignList;
-
