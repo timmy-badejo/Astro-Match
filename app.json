@@ -4,7 +4,7 @@
     "slug": "AstroMatch",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./vectors/AstorMatchLogo.png",
+    "icon": "./vectors/AstroMatchLogo.png",
     "splash": {
       "image": "./vectors/splash-image.png",
       "resizeMode": "cover",
@@ -29,7 +29,7 @@
       "versionCode": 1,
       "permissions": [],
       "adaptiveIcon": {
-        "foregroundImage": "./vectors/AstorMatchLogo.png",
+        "foregroundImage": "./vectors/AstroMatchLogo.png",
         "backgroundColor": "#FFFFFF"
       }
     },
