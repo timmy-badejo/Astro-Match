@@ -5,8 +5,16 @@ import { zodiacSigns } from '../data/zodiacData'; // Import zodiac sign data fro
 // ResultsScreen component: Displays compatibility results and insights based on the selected zodiac sign
 const ResultsScreen = ({ route, navigation }) => {
   // Destructure selectedSign from the route parameters (passed from the previous screen)
-  const { selectedSign } = route.params; // Grabbing the `selectedSign` from the navigation params
+  const { selectedSign } = route.params || {};
 
+if (!selectedSign) {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>No zodiac sign selected.</Text>
+      <Button title="Go Back" onPress={() => navigation.goBack()} />
+    </View>
+  );
+}
   // Find the details of the selected zodiac sign from the zodiacSigns array
   const selectedSignDetails = zodiacSigns.find((sign) => sign.name === selectedSign); // Search for the selected sign in the zodiacSigns data array
   
