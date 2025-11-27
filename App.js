@@ -6,12 +6,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignUpScreen from './Screens/SignUp'; // Screen where users input their details
 import ZodiacSignScreen from './Screens/ZodiacSign'; // Screen where users select their zodiac sign
-import CompatibilitySearchScreen from './Screens/CompatibiltySearch';
- // Screen to handle compatibility search
+import CompatibilitySearchScreen from './Screens/CompatibilitySearch';
+ // Screen to handle compatibility search // corrected 
 import ResultsScreen from './Screens/Results'; // Screen for showing compatibility results
 import ProfileScreen from './Screens/Profile'; // Screen to display user profile
-import ZodiacSignList from '../components/ZodiacSignList'; // A component that lists zodiac signs
-import theme from '../color/style;' // Importing custom theme for consistent styling
+import ZodiacSignList from './components/ZodiacSignList'; // A component that lists zodiac signs
+import theme from './color/style'; // Importing custom theme for consistent styling
 import { Platform as RNPlatform } from 'react-native'; // Platform module for handling platform-specific UI logic
 
 // Creating the stack navigator object for navigation in v6
