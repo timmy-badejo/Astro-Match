@@ -1,4 +1,4 @@
-# AstroMatch – MDIA 3295 Project
+# AstroMatch – Project
 
 AstroMatch is a React Native (Expo) astrology dating app concept. Users create a profile, choose their zodiac sign, explore compatibility matches, save favorite signs, and view simple message threads.
 
