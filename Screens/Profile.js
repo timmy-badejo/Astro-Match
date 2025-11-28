@@ -1,43 +1,32 @@
+// Screens/Profile.js
 import React from 'react';
 import { View, Text, Button, StyleSheet, Image } from 'react-native';
 
-// ProfileScreen component: Displays the user's profile details
-const ProfileScreen = ({ route, navigation }) => {
-  // Destructure the passed data (name and selected zodiac sign) from route params
-  const { name, selectedSign } = route.params; // Extract the name and zodiac sign passed from the previous screen
+const ProfileScreen = ({ route }) => {
+  const { name = 'Guest', selectedSign = 'Unknown' } = route?.params || {};
 
-  // Profile data (hardcoded for now)
-  const bio = "Hey, I'm Timmy! I love web development, design, and exploring new tech."; // A short bio about the user
-  const username = "timmy-bad"; // Hardcoded username, can be dynamic if needed
-  const birthdate = "Jan 27, 1999"; // Birthdate information, can be dynamic if available
-  const profileImage = require('./vectors/profileimage.jpg'); // Path to the profile image from local assets (ensure correct path)
+  const bio = "Hey, I'm Timmy! I love web development, design, and exploring new tech.";
+  const username = 'timmy-bad';
+  const birthdate = 'Jan 27, 1999';
+  const profileImage = require('../vectors/profileimage.jpg');  // ✅ fixed path
 
   return (
-    <View style={styles.container}> {/* Main container for the profile screen */}
-      
-      {/* Profile Header */}
-      <Text style={styles.header}>Your Profile</Text> {/* The header text that introduces the profile screen */}
-      
-      {/* Profile Image */}
-      <Image source={profileImage} style={styles.profileImage} /> {/* Display the user's profile image */}
-      
-      {/* Profile Information */}
-      <Text style={styles.text}>Username: {username}</Text> {/* Display the username */}
-      <Text style={styles.text}>Name: {name}</Text> {/* Display the user's name passed from the previous screen */}
-      <Text style={styles.text}>Zodiac Sign: {selectedSign}</Text> {/* Display the selected zodiac sign */}
-      <Text style={styles.text}>Birthdate: {birthdate}</Text> {/* Display the user's birthdate */}
-      
-      {/* Bio Section */}
-      <Text style={styles.bio}>{bio}</Text> {/* Display a short bio about the user */}
-      
-      {/* Button to Edit Profile */}
+    <View style={styles.container}>
+      <Text style={styles.header}>Your Profile</Text>
+      <Image source={profileImage} style={styles.profileImage} />
+      <Text style={styles.text}>Username: {username}</Text>
+      <Text style={styles.text}>Name: {name}</Text>
+      <Text style={styles.text}>Zodiac Sign: {selectedSign}</Text>
+      <Text style={styles.text}>Birthdate: {birthdate}</Text>
+      <Text style={styles.bio}>{bio}</Text>
       <Button
         title="Edit Profile"
-        onPress={() => alert('Edit Profile functionality is not implemented yet.')} /* Placeholder action for editing the profile */
+        onPress={() => alert('Edit Profile functionality is not implemented yet.')}
       />
     </View>
   );
 };
+
 
 // Styles for the ProfileScreen components
 const styles = StyleSheet.create({

@@ -5,7 +5,6 @@ import { ThemeProvider } from 'react-native-elements';
 import { Nunito_400Regular, useFonts } from '@expo-google-fonts/nunito';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import SignUpScreen from './Screens/SignUp';
 import ZodiacSignScreen from './Screens/ZodiacSign';
 import CompatibilitySearchScreen from './Screens/CompatibilitySearch';
@@ -13,8 +12,6 @@ import ResultsScreen from './Screens/Results';
 import ProfileScreen from './Screens/Profile';
 import FavoritesScreen from './Screens/Favorites';
 import theme from './color/style';
-                   
-
 const Stack = createNativeStackNavigator();
 
 // (Optional) If you want to keep this for somewhere later
@@ -52,7 +49,7 @@ export default function App() {
           <Stack.Screen name="CompatibilitySearch" component={CompatibilitySearchScreen} />
           <Stack.Screen name="Results" component={ResultsScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="Favorites" component={FavoritesScreen} />   {/* ✅ new */}
+          <Stack.Screen name="Favorites" component={FavoritesScreen} />   
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
