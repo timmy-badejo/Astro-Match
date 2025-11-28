@@ -1,9 +1,11 @@
 // Screens/Favorites.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { zodiacSigns } from '../data/zodiacData';
 import theme from '../color/style';
+import MatchCard from '../components/MatchCard';
+import PrimaryButton from '../components/PrimaryButton';
 
 
 const FAVORITES_KEY = '@astromatch:favorites';
@@ -40,24 +42,25 @@ const FavoritesScreen = ({ navigation }) => {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.dates}>{item.dates}</Text>
-      </View>
+    <View style={styles.cardWrapper}>
+      <MatchCard
+        sign={item}
+        onPress={() =>
+          navigation.navigate('Results', { selectedSign: item.name })
+        }
+      />
       <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.button}
+        <PrimaryButton
+          title="View"
           onPress={() => navigation.navigate('Results', { selectedSign: item.name })}
-        >
-          <Text style={styles.buttonText}>View</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: theme.colors.error }]}
+          style={styles.actionButton}
+        />
+        <PrimaryButton
+          title="Remove"
           onPress={() => removeFavorite(item.name)}
-        >
-          <Text style={styles.buttonText}>Remove</Text>
-        </TouchableOpacity>
+          style={[styles.actionButton, styles.removeButton]}
+          textStyle={{ color: '#fff' }}
+        />
       </View>
     </View>
   );
@@ -104,35 +107,22 @@ const styles = StyleSheet.create({
     ...theme.textStyles.body,
     textAlign: 'center',
   },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: theme.spacing.medium,
-    borderRadius: theme.borderRadius.medium,
-    backgroundColor: theme.colors.cardBackground,
-    marginBottom: 10,
-    ...theme.shadows.light,
-  },
-  name: {
-    ...theme.textStyles.body,
-    fontWeight: 'bold',
-  },
-  dates: {
-    ...theme.textStyles.subtitle,
+  cardWrapper: {
+    marginBottom: theme.spacing.medium,
   },
   actions: {
     flexDirection: 'row',
-    gap: 8,
+    marginTop: 6,
   },
-  button: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: theme.borderRadius.small,
-    backgroundColor: theme.colors.primary,
+  actionButton: {
+    flex: 1,
+    width: 'auto',
+    paddingVertical: 10,
+    marginRight: theme.spacing.small,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
+  removeButton: {
+    backgroundColor: theme.colors.error,
+    marginRight: 0,
   },
 });
 

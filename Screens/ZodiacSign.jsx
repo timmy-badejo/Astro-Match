@@ -1,13 +1,14 @@
 // Screens/ZodiacSign.js
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Animated } from 'react-native';
+import { View, Text, Image, StyleSheet, Animated } from 'react-native';
 import ZodiacSignList from '../components/ZodiacSignList';
+import PrimaryButton from '../components/PrimaryButton';
 import { responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions';
 import theme from '../color/style';
 
 
-const ZodiacSignScreen = ({ navigation }) => {
-  const [selectedSign, setSelectedSign] = useState(null);     // full object
+const ZodiacSignScreen = ({ navigation, route }) => {
+  const [selectedSign, setSelectedSign] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
 
   const handleSignSelection = (sign) => {
@@ -22,7 +23,10 @@ const ZodiacSignScreen = ({ navigation }) => {
 
   const handleNext = () => {
     if (!selectedSign) return;
-    navigation.navigate('CompatibilitySearch', { selectedSign: selectedSign.name });
+    navigation.navigate('CompatibilitySearch', {
+      selectedSign: selectedSign.name,
+      profile: route.params?.profile || null,
+    });
   };
 
   return (
@@ -37,27 +41,12 @@ const ZodiacSignScreen = ({ navigation }) => {
 
       <ZodiacSignList onSelectSign={handleSignSelection} />
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          { backgroundColor: selectedSign ? theme.colors.primary : theme.colors.secondary },
-          { opacity: selectedSign ? 1 : 0.5 },
-        ]}
-        onPress={handleNext}
-        disabled={!selectedSign}
-      >
-        <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
-
-      {/* View Favorites shortcut */}
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: theme.colors.background }]}
+      <PrimaryButton title="Next" onPress={handleNext} disabled={!selectedSign} />
+      <PrimaryButton
+        title="View Favorites"
         onPress={() => navigation.navigate('Favorites')}
-      >
-        <Text style={[styles.buttonText, { color: theme.colors.primary }]}>
-          View Favorites
-        </Text>
-      </TouchableOpacity>
+        style={{ backgroundColor: theme.colors.secondary }}
+      />
 
       <Animated.View style={[styles.displayContainer, { opacity: fadeAnim }]}>
         <Text style={styles.displayText}>

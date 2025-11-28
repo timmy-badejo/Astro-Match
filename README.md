@@ -1,47 +1,36 @@
-# Astro-Match
-AstroMatch is a React Native / Expo app that helps users explore zodiac compatibility. Users can sign up with their name and sign, browse zodiac information, and view compatibility results between signs. This project was built for MDIA 3295 to practice feature development, manual testing, and QA documentation.
-What do ResultsScreen, ProfileScreen & CompatibilitySearchScreen do?
+# AstroMatch – MDIA 3295 Project
 
-CompatibilitySearchScreen
+AstroMatch is a React Native (Expo) astrology dating app concept. Users create a profile, choose their zodiac sign, explore compatibility matches, save favorite signs, and view simple message threads.
 
-Takes the selected sign from ZodiacSignScreen via route.params.selectedSign.
+## Screen Flow (10 Screens)
 
-Shows a “Searching compatibility for zodiac sign {selectedSign}” message.
+1. **SplashScreen** – Astro-world intro with floating logo and tagline.
+2. **OnboardingScreen** – Quick explanation of how AstroMatch works with CTA buttons.
+3. **CreateProfileScreen** – Collects name, email, date of birth, gender, about, and relationship intent.
+4. **SignInScreen** – Simple sign-in by name for returning users.
+5. **ZodiacSignScreen** – User chooses their zodiac sign from a refined list.
+6. **CompatibilitySearchScreen** – Shows the selected sign and prepares compatibility search.
+7. **ResultsScreen** – Displays compatible signs and insights, with “Add to favorites” and “View profile”.
+8. **ProfileScreen** – Shows profile info and best matches using match cards.
+9. **FavoritesScreen** – AsyncStorage-backed list of favorite signs.
+10. **MessagesScreen** – Simple message thread list per sign.
 
-Prepares the user for results / deeper logic.
+## Components
 
-Has a button “See Results” → navigates to ResultsScreen and passes the same selectedSign.
+- `PrimaryButton` – Reusable themed button.
+- `InputField` – Labeled text input with optional error message.
+- `OnboardingSlide` – Title/subtitle layout for onboarding.
+- `ZodiacSignList` – Shared zodiac data list with improved styling and tap targets.
+- `MatchCard` – Compact card for a sign + quick action.
+- `MessageThreadItem` – Row for conversations in the Messages screen.
 
-ResultsScreen
+## Data and Persistence
 
-Receives selectedSign from CompatibilitySearchScreen.
+- `data/zodiacData.js` holds sign names, date ranges, traits, and descriptions.
+- `AsyncStorage` is used to store favorite sign names under `@astromatch:favorites`.
 
-Looks up that sign’s data in zodiacSigns (from data/zodiacData.js).
+## Future Work
 
-Shows:
-
-compatible signs list
-
-a short text insight / description
-
-Has a “View Profile” button → navigates to ProfileScreen.
-
-ProfileScreen
-
-Receives name and selectedSign from the previous screen (later you’ll probably pass it from Results).
-
-Displays:
-
-user name
-
-zodiac sign
-
-profile picture
-
-basic bio/username and birthdate
-
-Acts as a “personalization” screen so the app feels like your profile, not just generic compatibility.
-
-You can literally describe this as:
-
-“The main flow is: SignUp → ZodiacSign → CompatibilitySearch → Results → Profile. Each screen passes data forward using route.params, building up from basic input (name, sign) to personalized compatibility insights and a user profile.”
+- Connect `api/astroApi.js` to a real or mocked astrology compatibility API.
+- Expand messages into real chat.
+- Add deeper validation and accessibility improvements.

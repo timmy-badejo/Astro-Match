@@ -1,63 +1,76 @@
-// Screens/Profile.js
 import React from 'react';
-import { View, Text, Button, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { zodiacSigns } from '../data/zodiacData';
+import MatchCard from '../components/MatchCard';
+import PrimaryButton from '../components/PrimaryButton';
+import theme from '../color/style';
 
-const ProfileScreen = ({ route }) => {
+const ProfileScreen = ({ route, navigation }) => {
   const { name = 'Guest', selectedSign = 'Unknown' } = route?.params || {};
 
-  const bio = "Hey, I'm Timmy! I love web development, design, and exploring new tech.";
-  const username = 'timmy-bad';
-  const birthdate = 'Jan 27, 1999';
-  const profileImage = require('../vectors/profileimage.jpg');  // ✅ fixed path
+  const signData = zodiacSigns.find((s) => s.name === selectedSign);
+  const matches = signData
+    ? zodiacSigns.filter((s) => signData.compatibleSigns.includes(s.name))
+    : [];
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Your Profile</Text>
-      <Image source={profileImage} style={styles.profileImage} />
-      <Text style={styles.text}>Username: {username}</Text>
+      <Image
+        source={require('../vectors/profileimage.jpg')}
+        style={styles.profileImage}
+      />
       <Text style={styles.text}>Name: {name}</Text>
       <Text style={styles.text}>Zodiac Sign: {selectedSign}</Text>
-      <Text style={styles.text}>Birthdate: {birthdate}</Text>
-      <Text style={styles.bio}>{bio}</Text>
-      <Button
-        title="Edit Profile"
-        onPress={() => alert('Edit Profile functionality is not implemented yet.')}
+
+      <Text style={styles.subHeader}>Best Matches</Text>
+      {matches.map((sign) => (
+        <MatchCard
+          key={sign.id}
+          sign={sign}
+          onPress={() =>
+            navigation.navigate('Messages', {
+              signName: sign.name,
+            })
+          }
+        />
+      ))}
+
+      <PrimaryButton
+        title="View Favorites"
+        onPress={() => navigation.navigate('Favorites')}
       />
-    </View>
+    </ScrollView>
   );
 };
 
-
-// Styles for the ProfileScreen components
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Flexbox for full height container
-    justifyContent: 'center', // Center content vertically
-    alignItems: 'center', // Center content horizontally
-    padding: 20, // Padding around the container for spacing
-    backgroundColor: '#f9f9f9', // Light background color for the screen
+    padding: theme.spacing.large,
+    backgroundColor: theme.colors.background,
   },
   header: {
-    fontSize: 24, // Larger font for the header
-    fontWeight: 'bold', // Bold font for emphasis
-    marginBottom: 20, // Space below the header
+    ...theme.textStyles.header,
+    marginBottom: theme.spacing.medium,
+    textAlign: 'center',
   },
   profileImage: {
-    width: 120, // Width of the profile image
-    height: 120, // Height of the profile image
-    borderRadius: 60, // Circular profile image (half of the width/height)
-    marginBottom: 20, // Space below the profile image
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    alignSelf: 'center',
+    marginBottom: theme.spacing.medium,
   },
   text: {
-    fontSize: 18, // Standard font size for profile details
-    marginVertical: 10, // Vertical spacing between each text item
+    ...theme.textStyles.body,
+    marginVertical: 4,
+    textAlign: 'center',
   },
-  bio: {
-    fontSize: 16, // Font size for the bio
-    fontStyle: 'italic', // Italic style for the bio to differentiate it
-    marginVertical: 15, // Space above and below the bio text
-    textAlign: 'center', // Center the bio text horizontally
-    color: '#555', // Light gray color for bio text
+  subHeader: {
+    ...theme.textStyles.body,
+    fontWeight: 'bold',
+    marginTop: theme.spacing.large,
+    marginBottom: theme.spacing.small,
   },
 });
 

@@ -2,33 +2,40 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import theme from '../color/style';
 
-export default function PrimaryButton({ title, onPress, disabled }) {
+const PrimaryButton = ({ title, onPress, disabled = false, style, textStyle }) => {
   return (
     <TouchableOpacity
-      style={[styles.button, { opacity: disabled ? 0.5 : 1 }]}
+      style={[
+        styles.button,
+        disabled && styles.disabled,
+        style,
+      ]}
       onPress={onPress}
+      activeOpacity={0.8}
       disabled={disabled}
-      activeOpacity={0.85}
     >
-      <Text style={styles.text}>{title}</Text>
+      <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: theme.colors.primary,
-    paddingVertical: 14,
-    borderRadius: theme.borderRadius.medium,
+    backgroundColor: theme.buttonStyles.backgroundColor,
+    paddingVertical: theme.buttonStyles.paddingVertical,
+    paddingHorizontal: theme.buttonStyles.paddingHorizontal,
+    borderRadius: theme.buttonStyles.borderRadius,
     alignItems: 'center',
-    marginVertical: 10,
-    width: '100%',
+    justifyContent: 'center',
+    marginVertical: theme.spacing.small,
     ...theme.shadows.light,
   },
+  disabled: {
+    opacity: 0.5,
+  },
   text: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: theme.textStyles.button.fontFamily,
+    ...theme.textStyles.button,
   },
 });
+
+export default PrimaryButton;

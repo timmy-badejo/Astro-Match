@@ -7,7 +7,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from './Screens/SplashScreen';
 import OnboardingScreen from './Screens/OnboardingScreen';
-import ProfileSetupScreen from './Screens/ProfileSetupScreen';
+import CreateProfileScreen from './Screens/CreateProfileScreen';
+import SignInScreen from './Screens/SignInScreen';
 import HomeScreen from './Screens/HomeScreen';
 import ZodiacSignScreen from './Screens/ZodiacSign';
 import CompatibilitySearchScreen from './Screens/CompatibilitySearch';
@@ -42,7 +43,8 @@ export default function App() {
         >
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
+          <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
+          <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="ZodiacSign" component={ZodiacSignScreen} />
           <Stack.Screen name="CompatibilitySearch" component={CompatibilitySearchScreen} />
@@ -57,19 +59,10 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.background,
-    padding: theme.spacing.medium,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
+    backgroundColor: theme.colors.background,
   },
 });

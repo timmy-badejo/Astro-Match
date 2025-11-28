@@ -2,54 +2,53 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import theme from '../color/style';
 
-export default function MessageThreadItem({ thread, onPress }) {
+const MessageThreadItem = ({ signName, lastMessage, onPress }) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.85}>
+    <TouchableOpacity style={styles.row} onPress={onPress}>
       <View style={styles.avatar}>
-        <Text style={styles.avatarText}>{thread.name?.[0] || '?'}</Text>
+        <Text style={styles.avatarText}>{signName.charAt(0)}</Text>
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.name}>{thread.name}</Text>
-        <Text style={styles.preview} numberOfLines={1}>
-          {thread.lastMessage}
+        <Text style={styles.signName}>{signName}</Text>
+        <Text style={styles.lastMessage} numberOfLines={1}>
+          {lastMessage}
         </Text>
       </View>
     </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
+  row: {
     flexDirection: 'row',
     padding: theme.spacing.medium,
-    backgroundColor: theme.colors.cardBackground,
-    marginVertical: 6,
-    borderRadius: theme.borderRadius.medium,
-    ...theme.shadows.light,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.borderColor,
+    alignItems: 'center',
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: theme.colors.primary,
-    justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 14,
+    justifyContent: 'center',
+    marginRight: theme.spacing.medium,
   },
   avatarText: {
     color: '#fff',
-    fontSize: 22,
     fontWeight: 'bold',
   },
   textContainer: {
     flex: 1,
   },
-  name: {
+  signName: {
     ...theme.textStyles.body,
     fontWeight: 'bold',
   },
-  preview: {
+  lastMessage: {
     ...theme.textStyles.subtitle,
-    marginTop: 3,
   },
 });
+
+export default MessageThreadItem;
