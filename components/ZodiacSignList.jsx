@@ -1,15 +1,14 @@
-// components/ZodiacSignList.js
+// components/ZodiacSignList.jsx
 import React from 'react';
 import { FlatList, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { zodiacSigns } from '../data/zodiacData';
 import theme from '../color/style';
 
-
-const ZodiacSignList = ({ onSelectSign }) => {
+export default function ZodiacSignList({ onSelectSign }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => onSelectSign(item)}          // ✅ full object
+      onPress={() => onSelectSign(item)}
       activeOpacity={0.8}
     >
       <Image source={item.image} style={styles.image} />
@@ -22,6 +21,7 @@ const ZodiacSignList = ({ onSelectSign }) => {
       </View>
     </TouchableOpacity>
   );
+
   return (
     <FlatList
       data={zodiacSigns}
@@ -30,42 +30,37 @@ const ZodiacSignList = ({ onSelectSign }) => {
       contentContainerStyle={styles.listContent}
     />
   );
-};
+}
 
 const styles = StyleSheet.create({
   listContent: {
-    paddingVertical: 8,
+    paddingVertical: 10,
   },
   card: {
     flexDirection: 'row',
-    alignItems: 'center',
     padding: theme.spacing.medium,
-    marginVertical: 6,
-    borderRadius: theme.borderRadius.medium,
     backgroundColor: theme.colors.cardBackground,
+    borderRadius: theme.borderRadius.medium,
+    marginVertical: 6,
+    alignItems: 'center',
     ...theme.shadows.light,
   },
   image: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    marginRight: 12,
+    marginRight: 14,
   },
-  textContainer: {
-    flex: 1,
-  },
+  textContainer: { flex: 1 },
   name: {
     ...theme.textStyles.body,
     fontWeight: 'bold',
-    marginBottom: 2,
   },
   dates: {
     ...theme.textStyles.subtitle,
-    marginBottom: 2,
   },
   traits: {
     ...theme.textStyles.subtitle,
+    marginTop: 2,
   },
 });
-
-export default ZodiacSignList;
