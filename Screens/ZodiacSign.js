@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Animated } from 'react-native';
 import ZodiacSignList from '../components/ZodiacSignList';
 import { responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions';
-import theme from '../color/style';
+
 
 const ZodiacSignScreen = ({ navigation }) => {
   const [selectedSign, setSelectedSign] = useState(null);     // full object
@@ -26,8 +26,8 @@ const ZodiacSignScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../vectors/AstroMatchLogo.png')}
-   // ✅ fixed path/name
+      <Image
+        source={require('../vectors/logo.png')}
         style={styles.logo}
         accessibilityLabel="AstroMatch logo"
       />

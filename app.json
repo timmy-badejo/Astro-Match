@@ -4,7 +4,7 @@
     "slug": "AstroMatch",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./vectors/AstroMatchLogo.png",
+    "icon": "./vectors/logo.png",
     "splash": {
       "image": "./vectors/splash-image.png",
       "resizeMode": "cover",
@@ -20,14 +20,13 @@
       "supportsTablet": true,
       "splash": {
         "image": "./vectors/ios-splash.png",
-        "resizeMode": "cover",
-        "backgroundColor": "#FFFFFF"
-      }
-    },
-    "icon": "./vectors/AstroMatchLogo.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#FFFFFF"
+    }
+  },
     "android": {
     "adaptiveIcon": {
-    "foregroundImage": "./vectors/AstroMatchLogo.png",
+    "foregroundImage": "./vectors/logo.png",
     "backgroundColor": "#FFFFFF"
   }
 },

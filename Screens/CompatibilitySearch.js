@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import theme from '../color/style'; // Importing the global theme for consistent styling across the app
+
 
 // CompatibilitySearchScreen component: Displays compatibility information for the selected zodiac sign
 const CompatibilitySearchScreen = ({ route, navigation }) => {

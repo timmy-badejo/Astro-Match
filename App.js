@@ -1,6 +1,6 @@
 // App.js
 import React from 'react';
-import { ActivityIndicator, View, Text, StyleSheet, Platform as RNPlatform } from 'react-native';
+import { ActivityIndicator, View, Text, StyleSheet } from 'react-native';
 import { ThemeProvider } from 'react-native-elements';
 import { Nunito_400Regular, useFonts } from '@expo-google-fonts/nunito';
 import { NavigationContainer } from '@react-navigation/native';
@@ -11,17 +11,9 @@ import CompatibilitySearchScreen from './Screens/CompatibilitySearch';
 import ResultsScreen from './Screens/Results';
 import ProfileScreen from './Screens/Profile';
 import FavoritesScreen from './Screens/Favorites';
-import theme from './color/style';
-const Stack = createNativeStackNavigator();
 
-// (Optional) If you want to keep this for somewhere later
-const WebLanding = () => (
-  <ThemeProvider theme={theme}>
-    <View style={styles.container}>
-      <Text style={styles.text}>Welcome to AstroMatch on the Web!</Text>
-    </View>
-  </ThemeProvider>
-);
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -36,7 +28,6 @@ export default function App() {
     );
   }
 
-  // ❗ We will now let web run the full app (fix for “web-only welcome” issue)
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
@@ -49,7 +40,7 @@ export default function App() {
           <Stack.Screen name="CompatibilitySearch" component={CompatibilitySearchScreen} />
           <Stack.Screen name="Results" component={ResultsScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="Favorites" component={FavoritesScreen} />   
+          <Stack.Screen name="Favorites" component={FavoritesScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

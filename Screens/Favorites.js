@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { zodiacSigns } from '../data/zodiacData';
-import theme from '../color/style';
+
 
 const FAVORITES_KEY = '@astromatch:favorites';
 

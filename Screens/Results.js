@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { zodiacSigns } from '../data/zodiacData';
-const FAVORITES_KEY = '@astromatch:favorite';
+const FAVORITES_KEY = '@astromatch:favorites';
 const ResultsScreen = ({ route, navigation }) => {
   const { selectedSign } = route.params || {};
   if (!selectedSign) {
