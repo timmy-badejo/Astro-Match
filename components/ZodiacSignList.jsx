@@ -2,6 +2,7 @@
 import React from 'react';
 import { FlatList, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { zodiacSigns } from '../data/zodiacData';
+import theme from '../color/style';
 
 
 const ZodiacSignList = ({ onSelectSign }) => {

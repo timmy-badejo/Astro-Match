@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
+import theme from '../color/style';
 
 
 // CompatibilitySearchScreen component: Displays compatibility information for the selected zodiac sign
@@ -55,5 +56,4 @@ const styles = StyleSheet.create({
 });
 
 export default CompatibilitySearchScreen;
-
 

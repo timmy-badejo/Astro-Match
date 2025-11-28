@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Animated } from 'react-native';
 import ZodiacSignList from '../components/ZodiacSignList';
 import { responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions';
+import theme from '../color/style';
 
 
 const ZodiacSignScreen = ({ navigation }) => {
