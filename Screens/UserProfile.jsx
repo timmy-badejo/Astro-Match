@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 import PrimaryButton from '../components/PrimaryButton';
 import theme from '../color/style';
@@ -20,6 +20,16 @@ const UserProfile = ({ route, navigation }) => {
       </View>
     );
   }
+
+  const shareProfile = async () => {
+    try {
+      await Share.share({
+        message: `Check out ${user.name}'s profile on Astro-Match (${user.sign}) https://example.com/user/${user.id}`,
+      });
+    } catch (e) {
+      // ignore
+    }
+  };
 
   const startPhotoThread = () => {
     navigation.navigate('PhotoThread', {
@@ -99,6 +109,10 @@ const UserProfile = ({ route, navigation }) => {
           style={{ flex: 1, marginLeft: 6, backgroundColor: theme.colors.secondary }}
         />
       </View>
+      <PrimaryButton
+        title="Share Profile"
+        onPress={shareProfile}
+      />
 
       <PrimaryButton
         title="Back to results"

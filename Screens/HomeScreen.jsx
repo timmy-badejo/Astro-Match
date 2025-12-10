@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Share } from 'react-native';
 import { Card, Avatar, ListItem, Icon } from 'react-native-elements';
 import PrimaryButton from '../components/PrimaryButton';
 import { zodiacSigns } from '../data/zodiacData';
+import { successStories } from '../data/successStories';
 import theme from '../color/style';
 
 const HomeScreen = ({ route, navigation }) => {
@@ -20,6 +21,17 @@ const HomeScreen = ({ route, navigation }) => {
   }, []);
 
   const previewMatches = useMemo(() => zodiacSigns.slice(0, 3), []);
+  const featuredStories = useMemo(() => successStories.slice(0, 3), []);
+
+  const inviteFriends = async () => {
+    try {
+      await Share.share({
+        message: 'Join me on Astro-Match—find your cosmic connection: https://example.com/invite',
+      });
+    } catch (e) {
+      // no-op
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -84,7 +96,28 @@ const HomeScreen = ({ route, navigation }) => {
             onPress={() => navigation.navigate('MainTabs', { screen: 'Settings' })}
             style={styles.smallButton}
           />
+          <PrimaryButton
+            title="Invite"
+            onPress={inviteFriends}
+            style={styles.smallButton}
+          />
         </View>
+      </Card>
+
+      <Card containerStyle={styles.card}>
+        <Card.Title style={styles.cardTitle}>Success stories</Card.Title>
+        {featuredStories.map((story) => (
+          <ListItem key={story.id} bottomDivider containerStyle={styles.listItem}>
+            <Icon name="heart" type="feather" color={theme.colors.highlight} />
+            <ListItem.Content>
+              <ListItem.Title style={styles.listTitle}>{story.title}</ListItem.Title>
+              <ListItem.Subtitle style={styles.listSubtitle}>
+                {story.signs} • {story.outcome}
+              </ListItem.Subtitle>
+              <Text style={styles.body} numberOfLines={2}>{story.snippet}</Text>
+            </ListItem.Content>
+          </ListItem>
+        ))}
       </Card>
 
       <ListItem
@@ -157,12 +190,12 @@ const styles = StyleSheet.create({
   },
   actionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
     marginTop: theme.spacing.small,
   },
   smallButton: {
     flex: 1,
-    marginHorizontal: 4,
   },
   linkItem: {
     backgroundColor: theme.colors.cardBackground,

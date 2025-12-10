@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppTheme } from '../context/ThemeContext';
@@ -62,6 +62,16 @@ const UserDetail = ({ route, navigation }) => {
     // placeholder for future report flow
   };
 
+  const shareProfile = async () => {
+    try {
+      await Share.share({
+        message: `Check out ${user.name}'s profile on Astro-Match (${user.sign}) https://example.com/user/${user.id}`,
+      });
+    } catch (e) {
+      // ignore
+    }
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}>
       <View style={styles.hero}>
@@ -114,6 +124,11 @@ const UserDetail = ({ route, navigation }) => {
           title={isFav ? 'Remove Favorite' : 'Add to Favorites'}
           onPress={toggleFavorite}
           style={{ flex: 1, marginLeft: theme.spacing.sm, backgroundColor: theme.colors.secondary }}
+        />
+        <PrimaryButton
+          title="Share Profile"
+          onPress={shareProfile}
+          style={{ flex: 1, marginLeft: theme.spacing.sm }}
         />
       </View>
 
@@ -182,6 +197,8 @@ const createStyles = (th) =>
     },
     actions: {
       flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: th.spacing.sm,
       marginTop: th.spacing.large,
     },
     report: {
