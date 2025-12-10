@@ -7,8 +7,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from 'react-native';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 import InputField from '../components/InputField';
 import PrimaryButton from '../components/PrimaryButton';
 import theme from '../color/style';
@@ -37,6 +38,7 @@ const CreateProfileScreen = ({ navigation, route }) => {
   const [errors, setErrors] = useState({});
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [initialLoaded, setInitialLoaded] = useState(false);
+  const [dateParts, setDateParts] = useState({ day: 1, month: 1, year: 1995 });
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -46,6 +48,10 @@ const CreateProfileScreen = ({ navigation, route }) => {
         setName(parsed.name || '');
         setEmail(parsed.email || '');
         setDob(parsed.dob || '');
+        if (parsed.dob) {
+          const [y, m, d] = parsed.dob.split('-').map((v) => parseInt(v, 10));
+          setDateParts({ year: y || 1995, month: m || 1, day: d || 1 });
+        }
         setGender(parsed.gender || '');
         setAbout(parsed.about || '');
         setRelationshipType(parsed.relationshipType ? [].concat(parsed.relationshipType) : []);
@@ -62,6 +68,10 @@ const CreateProfileScreen = ({ navigation, route }) => {
       setName(p.name || '');
       setEmail(p.email || '');
       setDob(p.dob || '');
+      if (p.dob) {
+        const [y, m, d] = p.dob.split('-').map((v) => parseInt(v, 10));
+        setDateParts({ year: y || 1995, month: m || 1, day: d || 1 });
+      }
       setGender(p.gender || '');
       setAbout(p.about || '');
       setRelationshipType(p.relationshipType ? [].concat(p.relationshipType) : []);
@@ -159,30 +169,15 @@ const CreateProfileScreen = ({ navigation, route }) => {
     relationshipType.length &&
     (!relationshipType.includes('Other') || otherType.trim());
 
-  const onDateChange = (_, selected) => {
-    if (Platform.OS === 'android') setShowDatePicker(false);
-    if (selected) {
-      const iso = selected.toISOString().split('T')[0];
-      setDob(iso);
-    }
+  const applyManualDate = () => {
+    const iso = `${dateParts.year.toString().padStart(4, '0')}-${dateParts.month
+      .toString()
+      .padStart(2, '0')}-${dateParts.day.toString().padStart(2, '0')}`;
+    setDob(iso);
+    setShowDatePicker(false);
   };
 
-  const openPicker = () => {
-    if (Platform.OS === 'android') {
-      DateTimePickerAndroid.open({
-        value: dob ? new Date(dob) : new Date(),
-        mode: 'date',
-        is24Hour: true,
-        maximumDate: new Date(),
-        onChange: onDateChange,
-      });
-    } else if (Platform.OS === 'ios') {
-      setShowDatePicker(true);
-    } else {
-      // Fallback for web: allow manual typing via alert/instruction
-      setShowDatePicker(true);
-    }
-  };
+  const openPicker = () => setShowDatePicker(true);
 
   return (
     <KeyboardAvoidingView
@@ -216,17 +211,52 @@ const CreateProfileScreen = ({ navigation, route }) => {
           value={dob}
           onPressIn={openPicker}
           onFocus={openPicker}
-          editable={Platform.OS === 'web'}
+          editable={false}
           error={errors.dob}
         />
         {showDatePicker && (
-          <DateTimePicker
-            value={dob ? new Date(dob) : new Date()}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            maximumDate={new Date()}
-            onChange={onDateChange}
-          />
+          <Modal visible transparent animationType="slide">
+            <View style={styles.pickerOverlay}>
+              <View style={styles.pickerCard}>
+                <Text style={styles.sectionLabel}>Select your birth date</Text>
+                <View style={styles.pickerRow}>
+                  <Picker
+                    selectedValue={dateParts.month}
+                    style={styles.picker}
+                    onValueChange={(v) => setDateParts((p) => ({ ...p, month: v }))}
+                  >
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                      <Picker.Item key={m} label={`Month ${m}`} value={m} />
+                    ))}
+                  </Picker>
+                  <Picker
+                    selectedValue={dateParts.day}
+                    style={styles.picker}
+                    onValueChange={(v) => setDateParts((p) => ({ ...p, day: v }))}
+                  >
+                    {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                      <Picker.Item key={d} label={`${d}`} value={d} />
+                    ))}
+                  </Picker>
+                  <Picker
+                    selectedValue={dateParts.year}
+                    style={styles.picker}
+                    onValueChange={(v) => setDateParts((p) => ({ ...p, year: v }))}
+                  >
+                    {Array.from({ length: 70 }, (_, i) => 1950 + i)
+                      .reverse()
+                      .map((y) => (
+                        <Picker.Item key={y} label={`${y}`} value={y} />
+                      ))}
+                  </Picker>
+                </View>
+                <View style={styles.pickerActions}>
+                  <PrimaryButton title="Cancel" onPress={() => setShowDatePicker(false)} />
+                  <PrimaryButton title="Set date" onPress={applyManualDate} />
+                </View>
+              </View>
+            </View>
+          </Modal>
         )}
 
         <Text style={styles.sectionLabel}>Gender</Text>
@@ -361,21 +391,21 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     borderWidth: 1,
-    borderColor: '#060B3A',
+    borderColor: '#fff',
     marginRight: 8,
   },
   radioOuterSelected: {
-    borderColor: theme.colors.primary,
+    borderColor: '#5A3DFF',
   },
   radioInner: {
     flex: 1,
     margin: 3,
     borderRadius: 9,
-    backgroundColor: theme.colors.primary,
+    backgroundColor: '#5A3DFF',
   },
   radioLabel: {
     ...theme.textStyles.body,
-    color: '#060B3A',
+    color: '#fff',
   },
   errorText: {
     color: theme.colors.error,
@@ -385,13 +415,40 @@ const styles = StyleSheet.create({
   buttonSpacer: {
     height: 80,
     backgroundColor: '#060B3A',
-    
   },
   footer: {
     padding: theme.spacing.large,
     backgroundColor: 'rgba(2,10,48,0.9)',
     borderTopWidth: 1,
     borderTopColor: theme.colors.borderColor,
+  },
+  pickerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.spacing.large,
+  },
+  pickerCard: {
+    width: '100%',
+    backgroundColor: theme.colors.cardBackground,
+    borderRadius: theme.borderRadius.medium,
+    padding: theme.spacing.medium,
+    borderWidth: 1,
+    borderColor: theme.colors.borderColor,
+  },
+  pickerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  picker: {
+    flex: 1,
+    color: theme.colors.text,
+  },
+  pickerActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: theme.spacing.small,
   },
 });
 
