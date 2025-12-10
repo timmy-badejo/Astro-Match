@@ -17,13 +17,16 @@ const ProfileScreen = ({ route, navigation }) => {
   const [streak, setStreak] = useState({ count: 0, lastCheck: null });
   const [badges, setBadges] = useState([]);
   const [views, setViews] = useState(0);
-  const [matches, setMatches] = useState(0);
+  const [matchCount, setMatchCount] = useState(0); // FIXED: Renamed from matches to matchCount
   const [activity, setActivity] = useState([]);
+  
   const name = profile.name || 'Guest';
   const selectedSign = profile.autoSign || route?.params?.selectedSign || 'Unknown';
 
   const signData = useMemo(() => zodiacSigns.find((s) => s.name === selectedSign), [selectedSign]);
-  const matches = useMemo(
+  
+  // FIXED: This is the correct matches variable (compatible signs)
+  const compatibleMatches = useMemo(
     () => (signData ? zodiacSigns.filter((s) => signData.compatibleSigns.includes(s.name)) : []),
     [signData],
   );
@@ -41,12 +44,13 @@ const ProfileScreen = ({ route, navigation }) => {
         const quizBest = await getQuizBest();
         const favoritesCount = await getFavoritesCount();
         const viewData = await getProfileViews();
-        const matchCount = await getMatchSuccessCount();
+        const matchSuccessCount = await getMatchSuccessCount(); // FIXED: Use different variable name
         const activityLog = await getActivityLog();
+        
         setStreak(streakData);
         setBadges(computeBadges({ streak: streakData.count, quizBest, favoritesCount }));
         setViews(viewData.total);
-        setMatches(matchCount);
+        setMatchCount(matchSuccessCount); // FIXED: Set matchCount state
         setActivity(activityLog);
       };
       loadProfile();
@@ -122,7 +126,7 @@ const ProfileScreen = ({ route, navigation }) => {
         <Text style={styles.body}>Daily streak: {streak.count} day{streak.count === 1 ? '' : 's'}</Text>
         <Text style={styles.body}>Last check: {streak.lastCheck || '—'}</Text>
         <Text style={styles.body}>Profile views: {views}</Text>
-        <Text style={styles.body}>Matches marked success: {matches}</Text>
+        <Text style={styles.body}>Matches marked success: {matchCount}</Text> {/* FIXED: Use matchCount */}
         <Text style={[styles.subHeader, { marginTop: theme.spacing.small }]}>Badges</Text>
         <View style={styles.badgeRow}>
           {badges.map((b) => (
@@ -142,7 +146,7 @@ const ProfileScreen = ({ route, navigation }) => {
 
       <Text style={[styles.subHeader, { textAlign: 'center' }]}>Best Matches</Text>
       <View style={styles.matchesRow}>
-        {matches.map((sign) => (
+        {compatibleMatches.map((sign) => ( /* FIXED: Use compatibleMatches */
           <MatchCard
             key={sign.id}
             sign={sign}
