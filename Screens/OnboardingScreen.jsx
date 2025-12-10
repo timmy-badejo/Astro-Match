@@ -31,7 +31,7 @@ const OnboardingScreen = ({ navigation }) => {
     }
   };
 
-  const handleSkip = () => navigation.replace('SignIn');
+  const handleSkip = () => navigation.replace('CreateProfile');
 
   return (
     <View style={styles.container}>

@@ -217,11 +217,25 @@ const ResultsScreen = ({ route, navigation }) => {
         }
       />
       <PrimaryButton
-        title="Go to Home"
+        title="Start using the app"
         onPress={() =>
-          navigation.navigate('MainTabs', { screen: 'Home', params: { zodiacSign: selectedSign } })
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: 'MainTabs',
+                params: {
+                  screen: 'Home',
+                  params: {
+                    zodiacSign: selectedSign,
+                    profile: route.params?.profile || {},
+                  },
+                },
+              },
+            ],
+          })
         }
-        style={{ backgroundColor: theme.colors.secondary }}
+        style={{ backgroundColor: theme.colors.secondary, marginTop: theme.spacing.small }}
       />
     </ScrollView>
   );

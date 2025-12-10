@@ -41,16 +41,6 @@ const MainTabs = () => {
         headerStyle: { backgroundColor: currentTheme.colors.background },
         headerTitleStyle: { color: currentTheme.colors.text },
         headerTintColor: currentTheme.colors.text,
-        headerLeft: route.name !== 'Home'
-          ? () => (
-            <TouchableOpacity
-              style={{ paddingHorizontal: currentTheme.spacing.small }}
-              onPress={() => navigation.navigate('Home')}
-            >
-              <Ionicons name="arrow-back" size={22} color={currentTheme.colors.text} />
-            </TouchableOpacity>
-          )
-          : undefined,
         tabBarIcon: ({ color, size }) => {
           const icons = {
             Home: 'home',
