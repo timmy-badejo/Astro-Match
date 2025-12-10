@@ -160,7 +160,8 @@ const CreateProfileScreen = ({ navigation, route }) => {
     (!relationshipType.includes('Other') || otherType.trim());
 
   const onDateChange = (_, selected) => {
-    setShowDatePicker(false);
+    // On Android, picker auto-closes after selection; on iOS we keep the last value.
+    if (Platform.OS === 'android') setShowDatePicker(false);
     if (selected) {
       const iso = selected.toISOString().split('T')[0];
       setDob(iso);
@@ -197,6 +198,7 @@ const CreateProfileScreen = ({ navigation, route }) => {
           label="Date of Birth"
           placeholder="YYYY-MM-DD"
           value={dob}
+          onPressIn={() => setShowDatePicker(true)}
           onFocus={() => setShowDatePicker(true)}
           editable={false}
           error={errors.dob}
@@ -205,7 +207,7 @@ const CreateProfileScreen = ({ navigation, route }) => {
           <DateTimePicker
             value={dob ? new Date(dob) : new Date()}
             mode="date"
-            display="spinner"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             maximumDate={new Date()}
             onChange={onDateChange}
           />
