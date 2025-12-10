@@ -28,6 +28,7 @@ export default function ZodiacSignList({ onSelectSign }) {
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={styles.listContent}
+      showsVerticalScrollIndicator={false}
     />
   );
 }
@@ -35,6 +36,7 @@ export default function ZodiacSignList({ onSelectSign }) {
 const styles = StyleSheet.create({
   listContent: {
     paddingVertical: 10,
+    paddingHorizontal: theme.spacing.medium,
   },
   card: {
     flexDirection: 'row',
@@ -44,12 +46,15 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     alignItems: 'center',
     ...theme.shadows.light,
+    borderWidth: 1,
+    borderColor: theme.colors.borderColor,
   },
   image: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     marginRight: 14,
+    resizeMode: 'contain',
   },
   textContainer: { flex: 1 },
   name: {
@@ -58,9 +63,11 @@ const styles = StyleSheet.create({
   },
   dates: {
     ...theme.textStyles.subtitle,
+    marginTop: 2,
   },
   traits: {
     ...theme.textStyles.subtitle,
-    marginTop: 2,
+    marginTop: 4,
+    flexShrink: 1,
   },
 });

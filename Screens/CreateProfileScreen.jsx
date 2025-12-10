@@ -11,6 +11,7 @@ import {
 import InputField from '../components/InputField';
 import PrimaryButton from '../components/PrimaryButton';
 import theme from '../color/style';
+import { Orbitron_700Bold } from '@expo-google-fonts/orbitron';
 
 const RELATIONSHIP_TYPES = [
   'Romantic relationship',
@@ -192,12 +193,13 @@ const styles = StyleSheet.create({
   },
   title: {
     ...theme.textStyles.header,
-    color: '#fff',
+    color: '#f4f4f4',
     marginBottom: theme.spacing.medium,
     letterSpacing: 1,
     textShadowColor: 'rgba(90,61,255,0.4)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 6,
+    fontFamily: 'Orbitron_700Bold',
   },
   sectionLabel: {
     ...theme.textStyles.subtitle,
@@ -238,7 +240,7 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: '#060B3A',
     marginRight: 8,
   },
   radioOuterSelected: {
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     ...theme.textStyles.body,
-    color: '#fff',
+    color: '#060B3A',
   },
   errorText: {
     color: theme.colors.error,
@@ -261,6 +263,8 @@ const styles = StyleSheet.create({
   },
   buttonSpacer: {
     height: 80,
+    backgroundColor: '#060B3A',
+    
   },
   footer: {
     padding: theme.spacing.large,

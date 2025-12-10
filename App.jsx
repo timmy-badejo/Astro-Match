@@ -3,6 +3,7 @@ import React from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { ThemeProvider } from 'react-native-elements';
 import { Nunito_400Regular, useFonts } from '@expo-google-fonts/nunito';
+import { Orbitron_700Bold } from '@expo-google-fonts/orbitron';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -58,6 +59,7 @@ const MainTabs = () => (
 export default function App() {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
+    Orbitron_700Bold,
   });
 
   if (!fontsLoaded) {

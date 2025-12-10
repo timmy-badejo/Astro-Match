@@ -42,11 +42,6 @@ const ZodiacSignScreen = ({ navigation, route }) => {
       <ZodiacSignList onSelectSign={handleSignSelection} />
 
       <PrimaryButton title="Next" onPress={handleNext} disabled={!selectedSign} />
-      <PrimaryButton
-        title="View Favorites"
-        onPress={() => navigation.navigate('MainTabs', { screen: 'Favorites' })}
-        style={{ backgroundColor: theme.colors.secondary }}
-      />
 
       <Animated.View style={[styles.displayContainer, { opacity: fadeAnim }]}>
         <Text style={styles.displayText}>
