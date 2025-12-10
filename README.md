@@ -3,7 +3,7 @@
 AstroMatch is a React Native (Expo) astrology dating app concept. Users create a profile, choose their zodiac sign, explore compatibility matches, save favorite signs, and view simple message threads.
 
 ## Screen Flow (10 Screens)
-
+o
 1. **SplashScreen** – Astro-world intro with floating logo and tagline.
 2. **OnboardingScreen** – Quick explanation of how AstroMatch works with CTA buttons.
 3. **CreateProfileScreen** – Collects name, email, date of birth, gender, about, and relationship intent.
