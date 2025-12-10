@@ -24,6 +24,7 @@ const CompatibilitySearchScreen = ({ route, navigation }) => {
         onPress={() =>
           navigation.navigate('Results', {
             selectedSign,
+            profile: route.params?.profile,
           })
         }
         disabled={!selectedSign}

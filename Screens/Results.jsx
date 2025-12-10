@@ -235,7 +235,7 @@ const ResultsScreen = ({ route, navigation }) => {
         onPress={() =>
           navigation.navigate('MainTabs', {
             screen: 'Profile',
-            selectedSign,
+            params: { selectedSign, profile: route.params?.profile || {} },
           })
         }
       />

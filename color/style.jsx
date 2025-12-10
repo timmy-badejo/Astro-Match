@@ -22,13 +22,13 @@ export default {
     title: {
       fontSize: 34,
       fontWeight: '700',
-      fontFamily: 'Nunito_400Regular',
+      fontFamily: 'Orbitron_700Bold',
       color: '#F7F7F7',
     },
     header: {
       fontSize: 28,
       fontWeight: '700',
-      fontFamily: 'Nunito_400Regular',
+      fontFamily: 'Orbitron_700Bold',
       color: '#F7F7F7',
     },
     subtitle: {
