@@ -6,11 +6,14 @@ import { zodiacSigns } from '../data/zodiacData';
 import { successStories } from '../data/successStories';
 import theme from '../color/style';
 import { checkInToday, getStreak } from '../utils/gamificationService';
+import { getPremiumStatus } from '../utils/premiumService';
+import AdBanner from '../components/AdBanner';
 
 const HomeScreen = ({ route, navigation }) => {
   const { name = 'Guest', zodiacSign = 'Your Sign' } = route?.params || {};
   const [streak, setStreak] = useState({ count: 0, lastCheck: null });
   const [checkedToday, setCheckedToday] = useState(false);
+  const [premium, setPremium] = useState(false);
 
   const dailyTip = useMemo(() => {
     const tips = [
@@ -41,6 +44,8 @@ const HomeScreen = ({ route, navigation }) => {
       const data = await getStreak();
       setStreak(data);
       setCheckedToday(data.lastCheck === new Date().toISOString().slice(0, 10));
+      const prem = await getPremiumStatus();
+      setPremium(!!prem.active);
     };
     loadStreak();
   }, []);
@@ -176,6 +181,8 @@ const HomeScreen = ({ route, navigation }) => {
         </ListItem.Content>
         <ListItem.Chevron color={theme.colors.highlight} />
       </ListItem>
+
+      <AdBanner hidden={premium} />
     </ScrollView>
   );
 };

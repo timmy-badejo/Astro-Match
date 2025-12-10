@@ -7,6 +7,7 @@ import { zodiacSigns } from '../data/zodiacData';
 import { fetchCompatibilityMessage } from '../api/astroApi';
 import theme from '../color/style';
 import { mockUsers } from '../data/mockUsers';
+import { getPremiumStatus, FREE_FAVORITE_LIMIT } from '../utils/premiumService';
 
 const FAVORITES_KEY = '@astromatch:favorites';
 const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
@@ -17,6 +18,7 @@ const ResultsScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState('');
   const [favoriteProfiles, setFavoriteProfiles] = useState([]);
+  const [premium, setPremium] = useState(false);
   const tiltAnim = useRef(new Animated.Value(0)).current;
 
   if (!selectedSign) {
@@ -83,6 +85,11 @@ const ResultsScreen = ({ route, navigation }) => {
       setFavoriteProfiles(parsed);
     };
     loadFavorites();
+    const loadPremium = async () => {
+      const prem = await getPremiumStatus();
+      setPremium(!!prem.active);
+    };
+    loadPremium();
   }, []);
 
   const openProfile = (user) => {
@@ -104,7 +111,12 @@ const ResultsScreen = ({ route, navigation }) => {
   };
 
   const toggleProfileFavorite = async (profileId) => {
-    const updated = favoriteProfiles.includes(profileId)
+    const isFav = favoriteProfiles.includes(profileId);
+    if (!premium && !isFav && favoriteProfiles.length >= FREE_FAVORITE_LIMIT) {
+      Alert.alert('Upgrade for unlimited favorites', 'Free users can save up to 5 favorites. Upgrade in Settings to save more.');
+      return;
+    }
+    const updated = isFav
       ? favoriteProfiles.filter((id) => id !== profileId)
       : [...favoriteProfiles, profileId];
     setFavoriteProfiles(updated);
@@ -258,6 +270,22 @@ const ResultsScreen = ({ route, navigation }) => {
         }
         style={{ backgroundColor: theme.colors.secondary, marginTop: theme.spacing.small }}
       />
+      <Card containerStyle={styles.card}>
+        <Text style={styles.subHeader}>Detailed compatibility report</Text>
+        {premium ? (
+          <>
+            <Text style={styles.text}>Ruling planet: {selectedSignDetails?.rulingPlanet || 'Sun'}</Text>
+            <Text style={styles.text}>Love match notes: {selectedSignDetails?.love || 'Keep things playful and honest.'}</Text>
+            <Text style={styles.text}>Friendship notes: {selectedSignDetails?.friendship || 'Stay communicative and supportive.'}</Text>
+            <Text style={styles.text}>Career notes: {selectedSignDetails?.career || 'Lean into leadership and creative sparks.'}</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.text}>Unlock deeper insights about love, friendship, and career compatibility.</Text>
+            <PrimaryButton title="Upgrade to Premium" onPress={() => navigation.navigate('Settings')} />
+          </>
+        )}
+      </Card>
     </ScrollView>
   );
 };

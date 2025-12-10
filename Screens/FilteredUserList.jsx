@@ -1,16 +1,31 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useAppTheme } from '../context/ThemeContext';
 import { mockUsers } from '../data/mockUsers';
 import UserCard from '../components/UserCard';
+import { getPremiumStatus } from '../utils/premiumService';
 
 const FilteredUserList = ({ route, navigation }) => {
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const sign = route.params?.sign;
   const [sort, setSort] = useState('compatibility');
+  const [premium, setPremium] = useState(false);
+  const [minCompat, setMinCompat] = useState(0);
 
-  const filtered = mockUsers.filter((u) => !sign || u.sign === sign);
+  useEffect(() => {
+    const load = async () => {
+      const prem = await getPremiumStatus();
+      setPremium(!!prem.active);
+    };
+    load();
+  }, []);
+
+  const filtered = mockUsers.filter((u) => {
+    const signMatch = !sign || u.sign === sign;
+    const compatMatch = premium ? (u.compatibility || 0) >= minCompat : true;
+    return signMatch && compatMatch;
+  });
   const sorted = [...filtered].sort((a, b) => {
     if (sort === 'name') return a.name.localeCompare(b.name);
     return (b.compatibility || 0) - (a.compatibility || 0);
@@ -44,6 +59,28 @@ const FilteredUserList = ({ route, navigation }) => {
           onPress={() => setSort('name')}
         >
           <Text style={styles.pillText}>Name</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.filterRow}>
+        <Text style={styles.filterLabel}>Advanced filters {premium ? '' : '(Premium)'}</Text>
+        <TouchableOpacity
+          style={[styles.pill, minCompat === 70 && styles.pillActive, !premium && styles.pillDisabled]}
+          onPress={() => premium && setMinCompat(70)}
+        >
+          <Text style={styles.pillText}>70%+</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.pill, minCompat === 80 && styles.pillActive, !premium && styles.pillDisabled]}
+          onPress={() => premium && setMinCompat(80)}
+        >
+          <Text style={styles.pillText}>80%+</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.pill, minCompat === 90 && styles.pillActive, !premium && styles.pillDisabled]}
+          onPress={() => premium && setMinCompat(90)}
+        >
+          <Text style={styles.pillText}>90%+</Text>
         </TouchableOpacity>
       </View>
 
@@ -97,6 +134,9 @@ const createStyles = (th) =>
     pillActive: {
       backgroundColor: th.colors.primary,
       borderColor: 'transparent',
+    },
+    pillDisabled: {
+      opacity: 0.45,
     },
     pillText: {
       ...th.textStyles.caption,

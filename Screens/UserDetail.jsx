@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share, Alert } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppTheme } from '../context/ThemeContext';
@@ -7,6 +7,7 @@ import { mockUsers } from '../data/mockUsers';
 import ElementBadge from '../components/ElementBadge';
 import CompatibilityMeter from '../components/CompatibilityMeter';
 import PrimaryButton from '../components/PrimaryButton';
+import { getPremiumStatus, FREE_FAVORITE_LIMIT } from '../utils/premiumService';
 
 const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
 
@@ -19,11 +20,14 @@ const UserDetail = ({ route, navigation }) => {
     mockUsers.find((u) => u.id === route.params?.userId) ||
     null;
   const [favorites, setFavorites] = useState([]);
+  const [premium, setPremium] = useState(false);
 
   useEffect(() => {
     const loadFavs = async () => {
       const stored = await AsyncStorage.getItem(FAVORITE_PROFILES_KEY);
       setFavorites(stored ? JSON.parse(stored) : []);
+      const prem = await getPremiumStatus();
+      setPremium(!!prem.active);
     };
     loadFavs();
   }, []);
@@ -39,6 +43,10 @@ const UserDetail = ({ route, navigation }) => {
   const isFav = favorites.includes(user.id);
 
   const toggleFavorite = async () => {
+    if (!premium && !isFav && favorites.length >= FREE_FAVORITE_LIMIT) {
+      Alert.alert('Upgrade for unlimited favorites', 'Free users can save up to 5 favorites. Upgrade in Settings to save more.');
+      return;
+    }
     const updated = isFav ? favorites.filter((id) => id !== user.id) : [...favorites, user.id];
     setFavorites(updated);
     await AsyncStorage.setItem(FAVORITE_PROFILES_KEY, JSON.stringify(updated));

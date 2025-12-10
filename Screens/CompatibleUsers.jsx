@@ -1,15 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Card, Avatar, Icon } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { mockUsers } from '../data/mockUsers';
 import theme from '../color/style';
+import { getPremiumStatus, FREE_FAVORITE_LIMIT } from '../utils/premiumService';
 
 const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
 
 const CompatibleUsers = ({ route, navigation }) => {
   const { sign } = route.params || {};
   const [favorites, setFavorites] = useState([]);
+  const [premium, setPremium] = useState(false);
 
   const filtered = useMemo(
     () => mockUsers.filter((u) => u.sign === sign),
@@ -20,12 +22,19 @@ const CompatibleUsers = ({ route, navigation }) => {
     const load = async () => {
       const stored = await AsyncStorage.getItem(FAVORITE_PROFILES_KEY);
       setFavorites(stored ? JSON.parse(stored) : []);
+      const prem = await getPremiumStatus();
+      setPremium(!!prem.active);
     };
     load();
   }, []);
 
   const toggleFavorite = async (id) => {
-    const updated = favorites.includes(id)
+    const isFav = favorites.includes(id);
+    if (!premium && !isFav && favorites.length >= FREE_FAVORITE_LIMIT) {
+      Alert.alert('Upgrade for unlimited favorites', 'Free users can save up to 5 favorites. Upgrade in Settings to save more.');
+      return;
+    }
+    const updated = isFav
       ? favorites.filter((f) => f !== id)
       : [...favorites, id];
     setFavorites(updated);

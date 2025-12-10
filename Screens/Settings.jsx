@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Alert } from 'react-native';
 import { Card, ListItem, CheckBox, Icon, ButtonGroup, Switch } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppTheme } from '../context/ThemeContext';
+import PrimaryButton from '../components/PrimaryButton';
 import {
   defaultPrefs,
   getPreferences,
@@ -13,11 +14,13 @@ import {
   triggerMessageAlert,
   hydrateNotifications,
 } from '../utils/notificationService';
+import { getPremiumStatus, setPremiumStatus } from '../utils/premiumService';
 
 const SettingsScreen = () => {
   const { theme: currentTheme, mode, setMode } = useAppTheme();
   const [notifPrefs, setNotifPrefs] = useState(defaultPrefs);
   const [tips, setTips] = useState(true);
+  const [premium, setPremium] = useState(false);
   const styles = useMemo(() => createStyles(currentTheme), [currentTheme]);
 
   const resetData = async () => {
@@ -29,6 +32,8 @@ const SettingsScreen = () => {
       const prefs = await getPreferences();
       setNotifPrefs(prefs);
       await hydrateNotifications();
+      const prem = await getPremiumStatus();
+      setPremium(!!prem.active);
     };
     load();
   }, []);
@@ -59,6 +64,16 @@ const SettingsScreen = () => {
     const next = !notifPrefs.messageAlerts;
     await updatePref('messageAlerts', next);
     if (next) await triggerMessageAlert();
+  };
+
+  const upgrade = async () => {
+    const updated = await setPremiumStatus(true);
+    setPremium(updated.active);
+  };
+
+  const downgrade = async () => {
+    const updated = await setPremiumStatus(false);
+    setPremium(updated.active);
   };
 
   const themeButtons = ['System', 'Light', 'Dark'];
@@ -136,6 +151,27 @@ const SettingsScreen = () => {
             </ListItem.Subtitle>
           </ListItem.Content>
           <Icon name="chevron-right" type="feather" color={currentTheme.colors.highlight} />
+        </ListItem>
+      </Card>
+
+      <Card containerStyle={styles.card}>
+        <Card.Title style={styles.title}>Premium</Card.Title>
+        <Text style={styles.text}>
+          Unlock detailed compatibility reports, unlimited favorites, advanced filters, and an ad-free experience.
+        </Text>
+        <ListItem containerStyle={styles.listItem}>
+          <Icon name="star" type="feather" color={currentTheme.colors.highlight} />
+          <ListItem.Content>
+            <ListItem.Title style={styles.listTitle}>Status: {premium ? 'Active' : 'Free'}</ListItem.Title>
+            <ListItem.Subtitle style={styles.listSubtitle}>
+              {premium ? 'Thank you for supporting Astro-Match!' : 'Upgrade to enjoy all premium perks.'}
+            </ListItem.Subtitle>
+          </ListItem.Content>
+          <PrimaryButton
+            title={premium ? 'Downgrade' : 'Upgrade'}
+            onPress={premium ? downgrade : upgrade}
+            style={{ marginLeft: 8 }}
+          />
         </ListItem>
       </Card>
     </View>
