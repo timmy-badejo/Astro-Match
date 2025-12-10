@@ -20,6 +20,7 @@ import ProfileScreen from './Screens/Profile';
 import FavoritesScreen from './Screens/Favorites';
 import MessagesScreen from './Screens/Messages';
 import SettingsScreen from './Screens/Settings';
+import ChatThread from './Screens/ChatThread';
 import theme from './color/style';
 
 
@@ -127,6 +128,11 @@ export default function App() {
             name="MainTabs"
             component={MainTabs}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ChatThread"
+            component={ChatThread}
+            options={{ title: 'Chat' }}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -2,24 +2,38 @@ import React, { useMemo, useState } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { ListItem, Avatar, SearchBar, Icon } from 'react-native-elements';
 import theme from '../color/style';
+import MessageThreadItem from '../components/MessageThreadItem';
 
-const MessagesScreen = ({ route }) => {
+const MessagesScreen = ({ route, navigation }) => {
   const baseThreads = useMemo(
     () => [
       {
         id: '1',
         signName: route?.params?.signName || 'Leo',
         lastMessage: 'Hey, how are you feeling about this week’s energy?',
+        history: [
+          { id: 'm1', from: 'them', text: 'Hey! Feeling optimistic this week.' },
+          { id: 'm2', from: 'you', text: 'Love that. Want to grab coffee Friday?' },
+          { id: 'm3', from: 'them', text: 'Yes! Friday works.' },
+        ],
       },
       {
         id: '2',
         signName: 'Aquarius',
         lastMessage: 'We should plan something spontaneous soon 🌌',
+        history: [
+          { id: 'm4', from: 'them', text: 'Let’s catch a meteor shower this weekend.' },
+          { id: 'm5', from: 'you', text: 'I’m in. Saturday night?' },
+        ],
       },
       {
         id: '3',
         signName: 'Pisces',
         lastMessage: 'Remember to take time for yourself today.',
+        history: [
+          { id: 'm6', from: 'them', text: 'How’s your week going?' },
+          { id: 'm7', from: 'you', text: 'Busy but excited to chat later!' },
+        ],
       },
     ],
     [route?.params?.signName],
@@ -29,6 +43,10 @@ const MessagesScreen = ({ route }) => {
   const filtered = baseThreads.filter((t) =>
     t.signName.toLowerCase().includes(search.toLowerCase())
   );
+
+  const openThread = (thread) => {
+    navigation.navigate('ChatThread', { thread });
+  };
 
   return (
     <View style={styles.container}>
@@ -50,7 +68,7 @@ const MessagesScreen = ({ route }) => {
           <ListItem
             bottomDivider
             containerStyle={styles.listItem}
-            onPress={() => {}}
+            onPress={() => openThread(item)}
           >
             <Avatar
               rounded
@@ -71,8 +89,6 @@ const MessagesScreen = ({ route }) => {
     </View>
   );
 };
-
-export default MessagesScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -107,3 +123,5 @@ const styles = StyleSheet.create({
     ...theme.textStyles.subtitle,
   },
 });
+
+export default MessagesScreen;
