@@ -24,6 +24,9 @@ import ChatThread from './Screens/ChatThread';
 import PhotoThread from './Screens/PhotoThread';
 import CompatibleUsers from './Screens/CompatibleUsers';
 import UserProfile from './Screens/UserProfile';
+import ZodiacDetail from './Screens/ZodiacDetail';
+import UserDetail from './Screens/UserDetail';
+import FilteredUserList from './Screens/FilteredUserList';
 import theme from './color/style';
 import { ThemeProvider, useAppTheme } from './context/ThemeContext';
 
@@ -150,6 +153,21 @@ const ThemedApp = ({ fontsLoaded }) => {
             name="CompatibleUsers"
             component={CompatibleUsers}
             options={{ title: 'Compatible users' }}
+          />
+          <Stack.Screen
+            name="ZodiacDetail"
+            component={ZodiacDetail}
+            options={{ title: 'Zodiac detail' }}
+          />
+          <Stack.Screen
+            name="UserDetail"
+            component={UserDetail}
+            options={{ title: 'User detail' }}
+          />
+          <Stack.Screen
+            name="FilteredUserList"
+            component={FilteredUserList}
+            options={{ title: 'Users' }}
           />
           <Stack.Screen
             name="UserProfile"

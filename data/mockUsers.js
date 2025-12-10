@@ -10,6 +10,8 @@ export const mockUsers = [
     compatibility: 92,
     location: 'Los Angeles, CA',
     occupation: 'Creative strategist',
+    age: 27,
+    signElement: 'Fire',
     image: require('../vectors/leo.png'),
     threadHistory: [
       { id: 'u1m1', from: 'them', text: 'Hey! Your energy caught my eye.' },
@@ -28,6 +30,8 @@ export const mockUsers = [
     compatibility: 88,
     location: 'Austin, TX',
     occupation: 'Product designer',
+    age: 29,
+    signElement: 'Fire',
     image: require('../vectors/sagitarius.png'),
     threadHistory: [
       { id: 'u2m1', from: 'them', text: 'Ever tried night markets abroad?' },
@@ -45,6 +49,8 @@ export const mockUsers = [
     compatibility: 86,
     location: 'Seattle, WA',
     occupation: 'Data storyteller',
+    age: 26,
+    signElement: 'Air',
     image: require('../vectors/aquarius.png'),
     threadHistory: [
       { id: 'u3m1', from: 'them', text: 'What’s your favorite constellation?' },
@@ -62,6 +68,8 @@ export const mockUsers = [
     compatibility: 84,
     location: 'Chicago, IL',
     occupation: 'Copywriter',
+    age: 28,
+    signElement: 'Air',
     image: require('../vectors/gemini.png'),
     threadHistory: [
       { id: 'u4m1', from: 'them', text: 'Want to swap favorite podcasts?' },
@@ -79,6 +87,8 @@ export const mockUsers = [
     compatibility: 85,
     location: 'Brooklyn, NY',
     occupation: 'Interior stylist',
+    age: 30,
+    signElement: 'Air',
     image: require('../vectors/libra.png'),
     threadHistory: [
       { id: 'u5m1', from: 'them', text: 'Made a new playlist—want it?' },
@@ -96,6 +106,8 @@ export const mockUsers = [
     compatibility: 87,
     location: 'Denver, CO',
     occupation: 'Event producer',
+    age: 27,
+    signElement: 'Fire',
     image: require('../vectors/aries.png'),
     threadHistory: [
       { id: 'u6m1', from: 'them', text: 'I found a rooftop show tonight.' },
