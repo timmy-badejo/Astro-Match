@@ -6,11 +6,26 @@ import theme from '../color/style';
 
 const SignInScreen = ({ navigation }) => {
   const [name, setName] = useState('');
+   const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
 
   const handleSignIn = () => {
     const trimmed = name.trim();
-    if (!trimmed) return;
-    navigation.navigate('ZodiacSign', { profile: { name: trimmed } });
+    const expectedPin = '1234';
+    if (!trimmed) {
+      setError('Name is required to sign in.');
+      return;
+    }
+    if (!/^[0-9]{4}$/.test(pin)) {
+      setError('Enter the 4-digit access PIN.');
+      return;
+    }
+    if (pin !== expectedPin) {
+      setError('Incorrect PIN. Try 1234 for demo access.');
+      return;
+    }
+    setError('');
+    navigation.replace('MainTabs', { screen: 'Home', params: { name: trimmed } });
   };
 
   return (
@@ -21,7 +36,21 @@ const SignInScreen = ({ navigation }) => {
         value={name}
         onChangeText={setName}
       />
-      <PrimaryButton title="Continue" onPress={handleSignIn} />
+      <InputField
+        label="4-digit PIN"
+        value={pin}
+        onChangeText={setPin}
+        keyboardType="number-pad"
+        maxLength={4}
+        secureTextEntry
+        error={error}
+      />
+      {error ? <Text style={styles.inlineError}>{error}</Text> : null}
+      <PrimaryButton
+        title="Continue"
+        onPress={handleSignIn}
+        disabled={!name.trim() || pin.length < 4}
+      />
     </View>
   );
 };
@@ -36,6 +65,10 @@ const styles = StyleSheet.create({
     ...theme.textStyles.header,
     color: '#fff',
     marginBottom: theme.spacing.medium,
+  },
+  inlineError: {
+    color: theme.colors.error,
+    marginBottom: theme.spacing.small,
   },
 });
 

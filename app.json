@@ -20,17 +20,21 @@
       "supportsTablet": true,
       "splash": {
         "image": "./vectors/ios-splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#FFFFFF"
-    }
-  },
+        "resizeMode": "cover",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
     "android": {
-    "adaptiveIcon": {
-    "foregroundImage": "./vectors/logo.png",
-    "backgroundColor": "#FFFFFF"
-  }
-},
-
+      "adaptiveIcon": {
+        "foregroundImage": "./vectors/logo.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "splash": {
+        "image": "./vectors/splash-image.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
     "web": {
       "favicon": "./vectors/favico.png"
     },

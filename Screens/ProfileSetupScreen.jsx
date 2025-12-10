@@ -10,9 +10,24 @@ const ProfileSetupScreen = ({ navigation }) => {
   const [about, setAbout] = useState('');
   const [relationshipType, setRelationshipType] = useState('');
   const [otherDetails, setOtherDetails] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const e = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const dobRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!name.trim()) e.name = 'Name required';
+    if (!email.trim() || !emailRegex.test(email.trim())) e.email = 'Valid email required';
+    if (!dob.trim() || !dobRegex.test(dob.trim())) e.dob = 'Use YYYY-MM-DD';
+    if (!gender.trim()) e.gender = 'Gender required';
+    if (!relationshipType.trim()) e.relationshipType = 'Tell us your intent';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
 
   const handleCreateProfile = () => {
-    navigation.replace('Home', { name });
+    if (!validate()) return;
+    navigation.replace('MainTabs', { screen: 'Home', params: { name } });
   };
 
   return (
@@ -26,6 +41,7 @@ const ProfileSetupScreen = ({ navigation }) => {
         value={name}
         onChangeText={setName}
       />
+      {errors.name && <Text style={styles.error}>{errors.name}</Text>}
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -33,6 +49,7 @@ const ProfileSetupScreen = ({ navigation }) => {
         value={email}
         onChangeText={setEmail}
       />
+      {errors.email && <Text style={styles.error}>{errors.email}</Text>}
       <TextInput
         style={styles.input}
         placeholder="Date of birth (YYYY-MM-DD)"
@@ -40,6 +57,7 @@ const ProfileSetupScreen = ({ navigation }) => {
         value={dob}
         onChangeText={setDob}
       />
+      {errors.dob && <Text style={styles.error}>{errors.dob}</Text>}
       <TextInput
         style={styles.input}
         placeholder="Gender (male / female / non-binary)"
@@ -47,6 +65,7 @@ const ProfileSetupScreen = ({ navigation }) => {
         value={gender}
         onChangeText={setGender}
       />
+      {errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
       <TextInput
         style={[styles.input, styles.multiline]}
         placeholder="About you"
@@ -62,6 +81,7 @@ const ProfileSetupScreen = ({ navigation }) => {
         value={relationshipType}
         onChangeText={setRelationshipType}
       />
+      {errors.relationshipType && <Text style={styles.error}>{errors.relationshipType}</Text>}
       <TextInput
         style={[styles.input, styles.multiline]}
         placeholder="Anything specific you're looking for?"
@@ -116,5 +136,9 @@ const styles = StyleSheet.create({
   buttonText: {
     ...theme.textStyles.button,
     color: '#fff',
+  },
+  error: {
+    color: theme.colors.error,
+    marginBottom: 6,
   },
 });

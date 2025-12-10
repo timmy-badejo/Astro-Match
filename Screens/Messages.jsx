@@ -1,45 +1,70 @@
-import React, { useState } from 'react';
-import { View, FlatList, StyleSheet, TextInput } from 'react-native';
-import MessageThreadItem from '../components/MessageThreadItem';
+import React, { useMemo, useState } from 'react';
+import { View, FlatList, StyleSheet } from 'react-native';
+import { ListItem, Avatar, SearchBar, Icon } from 'react-native-elements';
 import theme from '../color/style';
 
 const MessagesScreen = ({ route }) => {
-  const [threads] = useState([
-    {
-      id: '1',
-      signName: route?.params?.signName || 'Leo',
-      lastMessage: 'Hey, how are you feeling about this week’s energy?',
-    },
-    {
-      id: '2',
-      signName: 'Aquarius',
-      lastMessage: 'We should plan something spontaneous soon 🌌',
-    },
-  ]);
+  const baseThreads = useMemo(
+    () => [
+      {
+        id: '1',
+        signName: route?.params?.signName || 'Leo',
+        lastMessage: 'Hey, how are you feeling about this week’s energy?',
+      },
+      {
+        id: '2',
+        signName: 'Aquarius',
+        lastMessage: 'We should plan something spontaneous soon 🌌',
+      },
+      {
+        id: '3',
+        signName: 'Pisces',
+        lastMessage: 'Remember to take time for yourself today.',
+      },
+    ],
+    [route?.params?.signName],
+  );
 
   const [search, setSearch] = useState('');
-  const filtered = threads.filter((t) =>
+  const filtered = baseThreads.filter((t) =>
     t.signName.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.search}
+      <SearchBar
         placeholder="Search messages..."
-        value={search}
         onChangeText={setSearch}
+        value={search}
+        platform="default"
+        containerStyle={styles.searchContainer}
+        inputContainerStyle={styles.searchInput}
+        inputStyle={{ color: theme.colors.text }}
+        placeholderTextColor={theme.textStyles.subtitle.color}
       />
 
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <MessageThreadItem
-            signName={item.signName}
-            lastMessage={item.lastMessage}
+          <ListItem
+            bottomDivider
+            containerStyle={styles.listItem}
             onPress={() => {}}
-          />
+          >
+            <Avatar
+              rounded
+              title={item.signName.charAt(0)}
+              containerStyle={styles.avatar}
+            />
+            <ListItem.Content>
+              <ListItem.Title style={styles.title}>{item.signName}</ListItem.Title>
+              <ListItem.Subtitle style={styles.subtitle}>
+                {item.lastMessage}
+              </ListItem.Subtitle>
+            </ListItem.Content>
+            <Icon name="chevron-right" type="feather" color={theme.colors.highlight} />
+          </ListItem>
         )}
         contentContainerStyle={{ paddingBottom: theme.spacing.large }}
       />
@@ -54,13 +79,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
-  search: {
-    margin: theme.spacing.medium,
-    padding: 10,
-    borderRadius: theme.borderRadius.small,
-    borderWidth: 1,
-    borderColor: theme.colors.borderColor,
+  searchContainer: {
+    backgroundColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderTopColor: 'transparent',
+    paddingHorizontal: theme.spacing.medium,
+  },
+  searchInput: {
     backgroundColor: theme.colors.cardBackground,
-    color: theme.colors.text,
+  },
+  listItem: {
+    backgroundColor: theme.colors.cardBackground,
+    borderColor: theme.colors.borderColor,
+    borderWidth: 1,
+    marginHorizontal: theme.spacing.medium,
+    marginBottom: 8,
+    borderRadius: theme.borderRadius.medium,
+  },
+  avatar: {
+    backgroundColor: theme.colors.primary,
+  },
+  title: {
+    ...theme.textStyles.body,
+    fontWeight: 'bold',
+  },
+  subtitle: {
+    ...theme.textStyles.subtitle,
   },
 });

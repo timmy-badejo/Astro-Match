@@ -44,7 +44,7 @@ const ZodiacSignScreen = ({ navigation, route }) => {
       <PrimaryButton title="Next" onPress={handleNext} disabled={!selectedSign} />
       <PrimaryButton
         title="View Favorites"
-        onPress={() => navigation.navigate('Favorites')}
+        onPress={() => navigation.navigate('MainTabs', { screen: 'Favorites' })}
         style={{ backgroundColor: theme.colors.secondary }}
       />
 

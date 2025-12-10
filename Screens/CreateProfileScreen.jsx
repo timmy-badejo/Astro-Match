@@ -26,10 +26,19 @@ const CreateProfileScreen = ({ navigation }) => {
 
   const validate = () => {
     const e = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const dobRegex = /^\d{4}-\d{2}-\d{2}$/;
+
     if (!name.trim()) e.name = 'Name is required.';
     if (!email.trim()) e.email = 'Email is required.';
+    else if (!emailRegex.test(email.trim())) e.email = 'Enter a valid email.';
     if (!dob.trim()) e.dob = 'Date of birth is required.';
+    else if (!dobRegex.test(dob.trim())) e.dob = 'Use YYYY-MM-DD format.';
     if (!gender) e.gender = 'Please select a gender.';
+    if (!relationshipType) e.relationshipType = 'Pick what you are here for.';
+    if (relationshipType === 'Other' && !otherType.trim()) {
+      e.otherType = 'Tell us more about what you are looking for.';
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -47,6 +56,14 @@ const CreateProfileScreen = ({ navigation }) => {
       },
     });
   };
+
+  const canContinue =
+    name.trim() &&
+    email.trim() &&
+    dob.trim() &&
+    gender &&
+    relationshipType &&
+    (relationshipType !== 'Other' || otherType.trim());
 
   return (
     <View style={styles.container}>
@@ -126,16 +143,18 @@ const CreateProfileScreen = ({ navigation }) => {
           <Text style={styles.radioLabel}>{type}</Text>
         </TouchableOpacity>
       ))}
+      {errors.relationshipType && <Text style={styles.errorText}>{errors.relationshipType}</Text>}
 
       {relationshipType === 'Other' && (
         <InputField
           label="Please specify"
           value={otherType}
           onChangeText={setOtherType}
+          error={errors.otherType}
         />
       )}
 
-      <PrimaryButton title="Continue" onPress={handleContinue} />
+      <PrimaryButton title="Continue" onPress={handleContinue} disabled={!canContinue} />
     </View>
   );
 };

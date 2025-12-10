@@ -5,6 +5,8 @@ import { ThemeProvider } from 'react-native-elements';
 import { Nunito_400Regular, useFonts } from '@expo-google-fonts/nunito';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import SplashScreen from './Screens/SplashScreen';
 import OnboardingScreen from './Screens/OnboardingScreen';
 import CreateProfileScreen from './Screens/CreateProfileScreen';
@@ -16,10 +18,42 @@ import ResultsScreen from './Screens/Results';
 import ProfileScreen from './Screens/Profile';
 import FavoritesScreen from './Screens/Favorites';
 import MessagesScreen from './Screens/Messages';
+import SettingsScreen from './Screens/Settings';
 import theme from './color/style';
 
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const MainTabs = () => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      headerShown: true,
+      tabBarActiveTintColor: theme.colors.primary,
+      tabBarInactiveTintColor: '#93A0C1',
+      tabBarStyle: { backgroundColor: theme.colors.cardBackground },
+      headerStyle: { backgroundColor: theme.colors.background },
+      headerTitleStyle: { color: theme.colors.text },
+      headerTintColor: theme.colors.text,
+      tabBarIcon: ({ color, size }) => {
+        const icons = {
+          Home: 'home',
+          Favorites: 'heart',
+          Messages: 'chatbubbles',
+          Profile: 'person-circle',
+          Settings: 'settings',
+        };
+        return <Ionicons name={icons[route.name] || 'ellipse'} size={size} color={color} />;
+      },
+    })}
+  >
+    <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Screen name="Favorites" component={FavoritesScreen} />
+    <Tab.Screen name="Messages" component={MessagesScreen} />
+    <Tab.Screen name="Profile" component={ProfileScreen} />
+    <Tab.Screen name="Settings" component={SettingsScreen} />
+  </Tab.Navigator>
+);
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -39,19 +73,49 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"
-          screenOptions={{ headerShown: false }}
+          screenOptions={{
+            headerShown: true,
+            headerStyle: { backgroundColor: theme.colors.background },
+            headerTitleStyle: { color: theme.colors.text },
+            headerTintColor: theme.colors.text,
+          }}
         >
-          <Stack.Screen name="Splash" component={SplashScreen} />
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
+          <Stack.Screen
+            name="Splash"
+            component={SplashScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Onboarding"
+            component={OnboardingScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CreateProfile"
+            component={CreateProfileScreen}
+            options={{ title: 'Create Profile' }}
+          />
           <Stack.Screen name="SignIn" component={SignInScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="ZodiacSign" component={ZodiacSignScreen} />
-          <Stack.Screen name="CompatibilitySearch" component={CompatibilitySearchScreen} />
-          <Stack.Screen name="Results" component={ResultsScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="Favorites" component={FavoritesScreen} />
-          <Stack.Screen name="Messages" component={MessagesScreen} />
+          <Stack.Screen
+            name="ZodiacSign"
+            component={ZodiacSignScreen}
+            options={{ title: 'Pick your sign' }}
+          />
+          <Stack.Screen
+            name="CompatibilitySearch"
+            component={CompatibilitySearchScreen}
+            options={{ title: 'Compatibility search' }}
+          />
+          <Stack.Screen
+            name="Results"
+            component={ResultsScreen}
+            options={{ title: 'Results' }}
+          />
+          <Stack.Screen
+            name="MainTabs"
+            component={MainTabs}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

@@ -1,10 +1,10 @@
 // Screens/Favorites.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { ListItem, Avatar, CheckBox } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { zodiacSigns } from '../data/zodiacData';
 import theme from '../color/style';
-import MatchCard from '../components/MatchCard';
 import PrimaryButton from '../components/PrimaryButton';
 
 
@@ -12,6 +12,7 @@ const FAVORITES_KEY = '@astromatch:favorites';
 
 const FavoritesScreen = ({ navigation }) => {
   const [favorites, setFavorites] = useState([]);
+  const [alertPrefs, setAlertPrefs] = useState({});
 
   const loadFavorites = async () => {
     try {
@@ -41,28 +42,36 @@ const FavoritesScreen = ({ navigation }) => {
     }
   };
 
+  const toggleAlert = (name) => {
+    setAlertPrefs((prev) => ({ ...prev, [name]: !prev[name] }));
+  };
+
   const renderItem = ({ item }) => (
-    <View style={styles.cardWrapper}>
-      <MatchCard
-        sign={item}
-        onPress={() =>
-          navigation.navigate('Results', { selectedSign: item.name })
-        }
+    <ListItem
+      bottomDivider
+      containerStyle={styles.listItem}
+      onPress={() => navigation.navigate('Results', { selectedSign: item.name })}
+    >
+      <Avatar source={item.image} rounded />
+      <ListItem.Content>
+        <ListItem.Title style={styles.title}>{item.name}</ListItem.Title>
+        <ListItem.Subtitle style={styles.subtitle}>{item.dates}</ListItem.Subtitle>
+        <CheckBox
+          title="Notify me about this match"
+          checked={!!alertPrefs[item.name]}
+          onPress={() => toggleAlert(item.name)}
+          containerStyle={styles.checkbox}
+          textStyle={styles.checkboxText}
+        />
+      </ListItem.Content>
+      <PrimaryButton
+        title="Remove"
+        onPress={() => removeFavorite(item.name)}
+        style={styles.removeButton}
+        textStyle={{ color: '#fff', fontSize: 12 }}
       />
-      <View style={styles.actions}>
-        <PrimaryButton
-          title="View"
-          onPress={() => navigation.navigate('Results', { selectedSign: item.name })}
-          style={styles.actionButton}
-        />
-        <PrimaryButton
-          title="Remove"
-          onPress={() => removeFavorite(item.name)}
-          style={[styles.actionButton, styles.removeButton]}
-          textStyle={{ color: '#fff' }}
-        />
-      </View>
-    </View>
+      <ListItem.Chevron color={theme.colors.highlight} />
+    </ListItem>
   );
 
   if (!favorites.length) {
@@ -107,22 +116,33 @@ const styles = StyleSheet.create({
     ...theme.textStyles.body,
     textAlign: 'center',
   },
-  cardWrapper: {
-    marginBottom: theme.spacing.medium,
+  listItem: {
+    backgroundColor: theme.colors.cardBackground,
+    borderRadius: theme.borderRadius.medium,
+    marginHorizontal: theme.spacing.medium,
+    marginVertical: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.borderColor,
   },
-  actions: {
-    flexDirection: 'row',
-    marginTop: 6,
+  title: {
+    ...theme.textStyles.body,
+    fontWeight: 'bold',
   },
-  actionButton: {
-    flex: 1,
-    width: 'auto',
-    paddingVertical: 10,
-    marginRight: theme.spacing.small,
+  subtitle: {
+    ...theme.textStyles.subtitle,
+  },
+  checkbox: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    paddingHorizontal: 0,
+  },
+  checkboxText: {
+    ...theme.textStyles.subtitle,
   },
   removeButton: {
     backgroundColor: theme.colors.error,
-    marginRight: 0,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
   },
 });
 
