@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, Alert, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
+import { Card, Avatar, Icon } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PrimaryButton from '../components/PrimaryButton';
 import { zodiacSigns } from '../data/zodiacData';
@@ -7,12 +8,49 @@ import { fetchCompatibilityMessage } from '../api/astroApi';
 import theme from '../color/style';
 
 const FAVORITES_KEY = '@astromatch:favorites';
+const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
+
+const MOCK_PROFILES = [
+  {
+    id: 'p1',
+    name: 'Nova',
+    sign: 'Leo',
+    catchPhrase: 'Chasing sunrises and good energy.',
+    insight: 'Bold conversationalist who thrives on playful banter.',
+    image: require('../vectors/profileimage.jpg'),
+  },
+  {
+    id: 'p2',
+    name: 'Orion',
+    sign: 'Sagittarius',
+    catchPhrase: 'Let’s swap travel stories over coffee.',
+    insight: 'Adventurous and honest, loves spontaneous plans.',
+    image: require('../vectors/leo.png'),
+  },
+  {
+    id: 'p3',
+    name: 'Luna',
+    sign: 'Aquarius',
+    catchPhrase: 'Building the future one idea at a time.',
+    insight: 'Thoughtful, curious, and big on meaningful chats.',
+    image: require('../vectors/aquarius.png'),
+  },
+  {
+    id: 'p4',
+    name: 'Kai',
+    sign: 'Gemini',
+    catchPhrase: 'Two sides, both ready for adventure.',
+    insight: 'Great listener with a witty sense of humor.',
+    image: require('../vectors/gemini.png'),
+  },
+];
 
 const ResultsScreen = ({ route, navigation }) => {
   const { selectedSign } = route.params || {};
   const [apiMessage, setApiMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState('');
+  const [favoriteProfiles, setFavoriteProfiles] = useState([]);
 
   if (!selectedSign) {
     return (
@@ -30,6 +68,10 @@ const ResultsScreen = ({ route, navigation }) => {
     (sign) => sign.name === selectedSign
   );
   const compatibleSigns = selectedSignDetails?.compatibleSigns || [];
+  const candidateProfiles = useMemo(
+    () => MOCK_PROFILES.filter((p) => compatibleSigns.includes(p.sign)),
+    [compatibleSigns],
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -51,6 +93,15 @@ const ResultsScreen = ({ route, navigation }) => {
     };
   }, [selectedSign]);
 
+  useEffect(() => {
+    const loadFavorites = async () => {
+      const stored = await AsyncStorage.getItem(FAVORITE_PROFILES_KEY);
+      const parsed = stored ? JSON.parse(stored) : [];
+      setFavoriteProfiles(parsed);
+    };
+    loadFavorites();
+  }, []);
+
   const addToFavorites = async () => {
     try {
       const stored = await AsyncStorage.getItem(FAVORITES_KEY);
@@ -64,6 +115,57 @@ const ResultsScreen = ({ route, navigation }) => {
       console.log(e);
       Alert.alert('Error', 'Could not save favorite. Please try again.');
     }
+  };
+
+  const toggleProfileFavorite = async (profileId) => {
+    const updated = favoriteProfiles.includes(profileId)
+      ? favoriteProfiles.filter((id) => id !== profileId)
+      : [...favoriteProfiles, profileId];
+    setFavoriteProfiles(updated);
+    await AsyncStorage.setItem(FAVORITE_PROFILES_KEY, JSON.stringify(updated));
+  };
+
+  const renderProfileCard = ({ item }) => {
+    const isFav = favoriteProfiles.includes(item.id);
+    return (
+      <Card containerStyle={styles.card}>
+        <View style={styles.cardHeader}>
+          <Avatar rounded source={item.image} size="medium" />
+          <View style={{ flex: 1, marginLeft: theme.spacing.small }}>
+            <Text style={styles.cardTitle}>{item.name}</Text>
+            <Text style={styles.cardSubtitle}>{item.sign}</Text>
+          </View>
+          <TouchableOpacity onPress={() => toggleProfileFavorite(item.id)}>
+            <Icon
+              name={isFav ? 'heart' : 'heart-o'}
+              type="font-awesome"
+              color={isFav ? theme.colors.highlight : theme.colors.text}
+            />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.cardTagline}>{item.catchPhrase}</Text>
+        <Text style={styles.cardInsight}>{item.insight}</Text>
+        <View style={styles.cardActions}>
+          <PrimaryButton
+            title="View"
+            onPress={() =>
+              navigation.navigate('MainTabs', {
+                screen: 'Profile',
+                params: { name: item.name, selectedSign: item.sign },
+              })
+            }
+            style={styles.actionButton}
+          />
+          <PrimaryButton
+            title="Message"
+            onPress={() =>
+              navigation.navigate('MainTabs', { screen: 'Messages', params: { signName: item.name } })
+            }
+            style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
+          />
+        </View>
+      </Card>
+    );
   };
 
   return (
@@ -93,6 +195,20 @@ const ResultsScreen = ({ route, navigation }) => {
       {apiError ? <Text style={styles.error}>{apiError}</Text> : null}
 
       <PrimaryButton title="Add to Favorites" onPress={addToFavorites} />
+
+      <Text style={[styles.subHeader, { marginTop: theme.spacing.large }]}>
+        People you might vibe with
+      </Text>
+      {candidateProfiles.length ? (
+        <FlatList
+          data={candidateProfiles}
+          keyExtractor={(item) => item.id}
+          renderItem={renderProfileCard}
+          contentContainerStyle={{ paddingVertical: theme.spacing.small }}
+        />
+      ) : (
+        <Text style={styles.text}>No suggested profiles for these signs yet.</Text>
+      )}
 
       <PrimaryButton
         title="View Profile"
@@ -136,6 +252,40 @@ const styles = StyleSheet.create({
   error: {
     color: theme.colors.error,
     marginTop: 4,
+  },
+  card: {
+    backgroundColor: theme.colors.cardBackground,
+    borderRadius: theme.borderRadius.medium,
+    borderColor: theme.colors.borderColor,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.small,
+  },
+  cardTitle: {
+    ...theme.textStyles.body,
+    fontWeight: 'bold',
+  },
+  cardSubtitle: {
+    ...theme.textStyles.subtitle,
+  },
+  cardTagline: {
+    ...theme.textStyles.body,
+    marginBottom: 4,
+  },
+  cardInsight: {
+    ...theme.textStyles.subtitle,
+    marginBottom: theme.spacing.small,
+  },
+  cardActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: theme.spacing.small,
+  },
+  actionButton: {
+    flex: 1,
+    marginHorizontal: 4,
   },
 });
 
