@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import InputField from '../components/InputField';
 import PrimaryButton from '../components/PrimaryButton';
 import theme from '../color/style';
@@ -160,11 +160,27 @@ const CreateProfileScreen = ({ navigation, route }) => {
     (!relationshipType.includes('Other') || otherType.trim());
 
   const onDateChange = (_, selected) => {
-    // On Android, picker auto-closes after selection; on iOS we keep the last value.
     if (Platform.OS === 'android') setShowDatePicker(false);
     if (selected) {
       const iso = selected.toISOString().split('T')[0];
       setDob(iso);
+    }
+  };
+
+  const openPicker = () => {
+    if (Platform.OS === 'android') {
+      DateTimePickerAndroid.open({
+        value: dob ? new Date(dob) : new Date(),
+        mode: 'date',
+        is24Hour: true,
+        maximumDate: new Date(),
+        onChange: onDateChange,
+      });
+    } else if (Platform.OS === 'ios') {
+      setShowDatePicker(true);
+    } else {
+      // Fallback for web: allow manual typing via alert/instruction
+      setShowDatePicker(true);
     }
   };
 
@@ -198,9 +214,9 @@ const CreateProfileScreen = ({ navigation, route }) => {
           label="Date of Birth"
           placeholder="YYYY-MM-DD"
           value={dob}
-          onPressIn={() => setShowDatePicker(true)}
-          onFocus={() => setShowDatePicker(true)}
-          editable={false}
+          onPressIn={openPicker}
+          onFocus={openPicker}
+          editable={Platform.OS === 'web'}
           error={errors.dob}
         />
         {showDatePicker && (
