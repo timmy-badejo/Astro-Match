@@ -21,6 +21,7 @@ import FavoritesScreen from './Screens/Favorites';
 import MessagesScreen from './Screens/Messages';
 import SettingsScreen from './Screens/Settings';
 import ChatThread from './Screens/ChatThread';
+import PhotoThread from './Screens/PhotoThread';
 import CompatibleUsers from './Screens/CompatibleUsers';
 import UserProfile from './Screens/UserProfile';
 import theme from './color/style';
@@ -139,6 +140,11 @@ const ThemedApp = ({ fontsLoaded }) => {
             name="ChatThread"
             component={ChatThread}
             options={{ title: 'Chat' }}
+          />
+          <Stack.Screen
+            name="PhotoThread"
+            component={PhotoThread}
+            options={{ title: 'Photos' }}
           />
           <Stack.Screen
             name="CompatibleUsers"

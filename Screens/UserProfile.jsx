@@ -21,6 +21,20 @@ const UserProfile = ({ route, navigation }) => {
     );
   }
 
+  const startPhotoThread = () => {
+    navigation.navigate('PhotoThread', {
+      thread: {
+        id: `${user.id}-photos`,
+        signName: `${user.name} • Photos`,
+        partnerImage: user.image,
+        history:
+          user.threadHistory && user.threadHistory.length
+            ? user.threadHistory
+            : [{ id: `${user.id}-photo-hello`, from: 'them', text: 'Let’s swap a few favorite shots.' }],
+      },
+    });
+  };
+
   const startChat = () => {
     navigation.navigate('ChatThread', {
       thread: {
@@ -75,8 +89,8 @@ const UserProfile = ({ route, navigation }) => {
 
       <View style={styles.actions}>
         <PrimaryButton
-          title="Message"
-          onPress={startChat}
+          title="Share Photos"
+          onPress={startPhotoThread}
           style={{ flex: 1, marginRight: 6 }}
         />
         <PrimaryButton
