@@ -4,6 +4,7 @@ import { Card, Avatar, ListItem, Icon } from 'react-native-elements';
 import PrimaryButton from '../components/PrimaryButton';
 import { zodiacSigns } from '../data/zodiacData';
 import { successStories } from '../data/successStories';
+import { weeklyHoroscopes, monthlyHoroscopes, zodiacArticles, relationshipAdvice } from '../data/content';
 import theme from '../color/style';
 import { checkInToday, getStreak } from '../utils/gamificationService';
 import { getPremiumStatus } from '../utils/premiumService';
@@ -88,6 +89,20 @@ const HomeScreen = ({ route, navigation }) => {
       </Card>
 
       <Card containerStyle={styles.card}>
+        <Card.Title style={styles.cardTitle}>Weekly horoscope</Card.Title>
+        <Text style={styles.body}>
+          {weeklyHoroscopes[zodiacSign] || 'Fresh energy is on the way. Stay open to new connections.'}
+        </Text>
+      </Card>
+
+      <Card containerStyle={styles.card}>
+        <Card.Title style={styles.cardTitle}>Monthly horoscope</Card.Title>
+        <Text style={styles.body}>
+          {monthlyHoroscopes[zodiacSign] || 'This month rewards consistency and honest conversations.'}
+        </Text>
+      </Card>
+
+      <Card containerStyle={styles.card}>
         <Card.Title style={styles.cardTitle}>Top matches preview</Card.Title>
         {previewMatches.map((sign) => (
           <ListItem
@@ -161,6 +176,27 @@ const HomeScreen = ({ route, navigation }) => {
               <Text style={styles.body} numberOfLines={2}>{story.snippet}</Text>
             </ListItem.Content>
           </ListItem>
+        ))}
+      </Card>
+
+      <Card containerStyle={styles.card}>
+        <Card.Title style={styles.cardTitle}>Zodiac articles</Card.Title>
+        {zodiacArticles.map((article) => (
+          <ListItem key={article.id} bottomDivider containerStyle={styles.listItem}>
+            <Icon name="book-open" type="feather" color={theme.colors.highlight} />
+            <ListItem.Content>
+              <ListItem.Title style={styles.listTitle}>{article.title}</ListItem.Title>
+              <ListItem.Subtitle style={styles.listSubtitle}>{article.category}</ListItem.Subtitle>
+              <Text style={styles.body} numberOfLines={2}>{article.snippet}</Text>
+            </ListItem.Content>
+          </ListItem>
+        ))}
+      </Card>
+
+      <Card containerStyle={styles.card}>
+        <Card.Title style={styles.cardTitle}>Relationship advice</Card.Title>
+        {relationshipAdvice.map((tip, idx) => (
+          <Text key={tip} style={styles.body}>{idx + 1}. {tip}</Text>
         ))}
       </Card>
 
