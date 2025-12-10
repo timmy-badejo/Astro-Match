@@ -6,12 +6,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { zodiacSigns } from '../data/zodiacData';
 import theme from '../color/style';
 import PrimaryButton from '../components/PrimaryButton';
+import { mockUsers } from '../data/mockUsers';
 
 
 const FAVORITES_KEY = '@astromatch:favorites';
+const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
 
 const FavoritesScreen = ({ navigation }) => {
   const [favorites, setFavorites] = useState([]);
+  const [favoriteUsers, setFavoriteUsers] = useState([]);
   const [alertPrefs, setAlertPrefs] = useState({});
 
   const loadFavorites = async () => {
@@ -20,6 +23,11 @@ const FavoritesScreen = ({ navigation }) => {
       const names = stored ? JSON.parse(stored) : [];
       const mapped = zodiacSigns.filter((s) => names.includes(s.name));
       setFavorites(mapped);
+
+      const storedUsers = await AsyncStorage.getItem(FAVORITE_PROFILES_KEY);
+      const userIds = storedUsers ? JSON.parse(storedUsers) : [];
+      const userMapped = mockUsers.filter((u) => userIds.includes(u.id));
+      setFavoriteUsers(userMapped);
     } catch (e) {
       console.log(e);
     }
@@ -74,7 +82,37 @@ const FavoritesScreen = ({ navigation }) => {
     </ListItem>
   );
 
-  if (!favorites.length) {
+  const renderUserItem = ({ item }) => (
+    <ListItem
+      bottomDivider
+      containerStyle={styles.listItem}
+      onPress={() => navigation.navigate('CompatibleUsers', { sign: item.sign })}
+    >
+      <Avatar source={item.image} rounded />
+      <ListItem.Content>
+        <ListItem.Title style={styles.title}>{item.name}</ListItem.Title>
+        <ListItem.Subtitle style={styles.subtitle}>
+          {item.sign} • Compatibility: {item.compatibility}%
+        </ListItem.Subtitle>
+        <Text style={styles.subtitle}>{item.about}</Text>
+      </ListItem.Content>
+      <PrimaryButton
+        title="Remove"
+        onPress={async () => {
+          const stored = await AsyncStorage.getItem(FAVORITE_PROFILES_KEY);
+          const ids = stored ? JSON.parse(stored) : [];
+          const updated = ids.filter((id) => id !== item.id);
+          await AsyncStorage.setItem(FAVORITE_PROFILES_KEY, JSON.stringify(updated));
+          setFavoriteUsers((prev) => prev.filter((u) => u.id !== item.id));
+        }}
+        style={styles.removeButton}
+        textStyle={{ color: '#fff', fontSize: 12 }}
+      />
+      <ListItem.Chevron color={theme.colors.highlight} />
+    </ListItem>
+  );
+
+  if (!favorites.length && !favoriteUsers.length) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyTitle}>No favorites yet</Text>
@@ -87,12 +125,29 @@ const FavoritesScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={favorites}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={{ padding: theme.spacing.medium }}
-      />
+      {favorites.length ? (
+        <>
+          <Text style={styles.sectionTitle}>Favorite signs</Text>
+          <FlatList
+            data={favorites}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+            contentContainerStyle={{ padding: theme.spacing.medium }}
+          />
+        </>
+      ) : null}
+
+      {favoriteUsers.length ? (
+        <>
+          <Text style={styles.sectionTitle}>Favorite people</Text>
+          <FlatList
+            data={favoriteUsers}
+            keyExtractor={(item) => item.id}
+            renderItem={renderUserItem}
+            contentContainerStyle={{ paddingHorizontal: theme.spacing.medium }}
+          />
+        </>
+      ) : null}
     </View>
   );
 };
@@ -130,6 +185,11 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...theme.textStyles.subtitle,
+  },
+  sectionTitle: {
+    ...theme.textStyles.header,
+    paddingHorizontal: theme.spacing.medium,
+    paddingTop: theme.spacing.medium,
   },
   checkbox: {
     backgroundColor: 'transparent',
