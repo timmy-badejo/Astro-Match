@@ -7,9 +7,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Modal,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import InputField from '../components/InputField';
 import PrimaryButton from '../components/PrimaryButton';
 import theme from '../color/style';
@@ -36,9 +34,16 @@ const CreateProfileScreen = ({ navigation, route }) => {
   const [relationshipType, setRelationshipType] = useState([]);
   const [otherType, setOtherType] = useState('');
   const [errors, setErrors] = useState({});
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [initialLoaded, setInitialLoaded] = useState(false);
-  const [dateParts, setDateParts] = useState({ day: 1, month: 1, year: 1995 });
+
+  const formatDob = (value) => {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    const parts = [];
+    if (digits.length >= 4) parts.push(digits.slice(0, 4));
+    if (digits.length >= 5) parts.push(digits.slice(4, 6));
+    if (digits.length >= 7) parts.push(digits.slice(6, 8));
+    return parts.join('-');
+  };
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -48,10 +53,6 @@ const CreateProfileScreen = ({ navigation, route }) => {
         setName(parsed.name || '');
         setEmail(parsed.email || '');
         setDob(parsed.dob || '');
-        if (parsed.dob) {
-          const [y, m, d] = parsed.dob.split('-').map((v) => parseInt(v, 10));
-          setDateParts({ year: y || 1995, month: m || 1, day: d || 1 });
-        }
         setGender(parsed.gender || '');
         setAbout(parsed.about || '');
         setRelationshipType(parsed.relationshipType ? [].concat(parsed.relationshipType) : []);
@@ -68,10 +69,6 @@ const CreateProfileScreen = ({ navigation, route }) => {
       setName(p.name || '');
       setEmail(p.email || '');
       setDob(p.dob || '');
-      if (p.dob) {
-        const [y, m, d] = p.dob.split('-').map((v) => parseInt(v, 10));
-        setDateParts({ year: y || 1995, month: m || 1, day: d || 1 });
-      }
       setGender(p.gender || '');
       setAbout(p.about || '');
       setRelationshipType(p.relationshipType ? [].concat(p.relationshipType) : []);
@@ -209,55 +206,10 @@ const CreateProfileScreen = ({ navigation, route }) => {
           label="Date of Birth"
           placeholder="YYYY-MM-DD"
           value={dob}
-          onPressIn={openPicker}
-          onFocus={openPicker}
-          editable={false}
+          onChangeText={(text) => setDob(formatDob(text))}
+          editable
           error={errors.dob}
         />
-        {showDatePicker && (
-          <Modal visible transparent animationType="slide">
-            <View style={styles.pickerOverlay}>
-              <View style={styles.pickerCard}>
-                <Text style={styles.sectionLabel}>Select your birth date</Text>
-                <View style={styles.pickerRow}>
-                  <Picker
-                    selectedValue={dateParts.month}
-                    style={styles.picker}
-                    onValueChange={(v) => setDateParts((p) => ({ ...p, month: v }))}
-                  >
-                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                      <Picker.Item key={m} label={`Month ${m}`} value={m} />
-                    ))}
-                  </Picker>
-                  <Picker
-                    selectedValue={dateParts.day}
-                    style={styles.picker}
-                    onValueChange={(v) => setDateParts((p) => ({ ...p, day: v }))}
-                  >
-                    {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-                      <Picker.Item key={d} label={`${d}`} value={d} />
-                    ))}
-                  </Picker>
-                  <Picker
-                    selectedValue={dateParts.year}
-                    style={styles.picker}
-                    onValueChange={(v) => setDateParts((p) => ({ ...p, year: v }))}
-                  >
-                    {Array.from({ length: 70 }, (_, i) => 1950 + i)
-                      .reverse()
-                      .map((y) => (
-                        <Picker.Item key={y} label={`${y}`} value={y} />
-                      ))}
-                  </Picker>
-                </View>
-                <View style={styles.pickerActions}>
-                  <PrimaryButton title="Cancel" onPress={() => setShowDatePicker(false)} />
-                  <PrimaryButton title="Set date" onPress={applyManualDate} />
-                </View>
-              </View>
-            </View>
-          </Modal>
-        )}
 
         <Text style={styles.sectionLabel}>Gender</Text>
         <View style={styles.chipRow}>
@@ -341,6 +293,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: theme.spacing.large,
     backgroundColor: '#060B3A',
+    paddingBottom: theme.spacing.xlarge,
   },
   title: {
     ...theme.textStyles.header,
@@ -421,34 +374,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(2,10,48,0.9)',
     borderTopWidth: 1,
     borderTopColor: theme.colors.borderColor,
-  },
-  pickerOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: theme.spacing.large,
-  },
-  pickerCard: {
-    width: '100%',
-    backgroundColor: theme.colors.cardBackground,
-    borderRadius: theme.borderRadius.medium,
-    padding: theme.spacing.medium,
-    borderWidth: 1,
-    borderColor: theme.colors.borderColor,
-  },
-  pickerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  picker: {
-    flex: 1,
-    color: theme.colors.text,
-  },
-  pickerActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: theme.spacing.small,
   },
 });
 
