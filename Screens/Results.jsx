@@ -6,44 +6,10 @@ import PrimaryButton from '../components/PrimaryButton';
 import { zodiacSigns } from '../data/zodiacData';
 import { fetchCompatibilityMessage } from '../api/astroApi';
 import theme from '../color/style';
+import { mockUsers } from '../data/mockUsers';
 
 const FAVORITES_KEY = '@astromatch:favorites';
 const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
-
-const MOCK_PROFILES = [
-  {
-    id: 'p1',
-    name: 'Nova',
-    sign: 'Leo',
-    catchPhrase: 'Chasing sunrises and good energy.',
-    insight: 'Bold conversationalist who thrives on playful banter.',
-    image: require('../vectors/profileimage.jpg'),
-  },
-  {
-    id: 'p2',
-    name: 'Orion',
-    sign: 'Sagittarius',
-    catchPhrase: 'Let’s swap travel stories over coffee.',
-    insight: 'Adventurous and honest, loves spontaneous plans.',
-    image: require('../vectors/leo.png'),
-  },
-  {
-    id: 'p3',
-    name: 'Luna',
-    sign: 'Aquarius',
-    catchPhrase: 'Building the future one idea at a time.',
-    insight: 'Thoughtful, curious, and big on meaningful chats.',
-    image: require('../vectors/aquarius.png'),
-  },
-  {
-    id: 'p4',
-    name: 'Kai',
-    sign: 'Gemini',
-    catchPhrase: 'Two sides, both ready for adventure.',
-    insight: 'Great listener with a witty sense of humor.',
-    image: require('../vectors/gemini.png'),
-  },
-];
 
 const ResultsScreen = ({ route, navigation }) => {
   const { selectedSign } = route.params || {};
@@ -70,7 +36,7 @@ const ResultsScreen = ({ route, navigation }) => {
   );
   const compatibleSigns = selectedSignDetails?.compatibleSigns || [];
   const candidateProfiles = useMemo(
-    () => MOCK_PROFILES.filter((p) => compatibleSigns.includes(p.sign)),
+    () => mockUsers.filter((p) => compatibleSigns.includes(p.sign)).slice(0, 6),
     [compatibleSigns],
   );
 
@@ -151,19 +117,9 @@ const ResultsScreen = ({ route, navigation }) => {
           <PrimaryButton
             title="View"
             onPress={() =>
-              navigation.navigate('MainTabs', {
-                screen: 'Profile',
-                params: { name: item.name, selectedSign: item.sign },
-              })
+              navigation.navigate('CompatibleUsers', { sign: item.sign, profile: route.params?.profile })
             }
             style={styles.actionButton}
-          />
-          <PrimaryButton
-            title="Message"
-            onPress={() =>
-              navigation.navigate('MainTabs', { screen: 'Messages', params: { signName: item.name } })
-            }
-            style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
           />
         </View>
       </Card>
@@ -185,15 +141,20 @@ const ResultsScreen = ({ route, navigation }) => {
           {compatibleSigns.map((sign) => {
             const signData = zodiacSigns.find((s) => s.name === sign);
             return (
-              <Animated.View
+              <TouchableOpacity
                 key={sign}
-                style={[styles.compatCard, { transform: [{ rotate: tiltInterpolation }] }]}
+                activeOpacity={0.85}
+                onPress={() => navigation.navigate('CompatibleUsers', { sign, profile: route.params?.profile })}
               >
-                {signData?.image ? (
-                  <Image source={signData.image} style={styles.compatImage} />
-                ) : null}
-                <Text style={styles.compatName}>{sign}</Text>
-              </Animated.View>
+                <Animated.View
+                  style={[styles.compatCard, { transform: [{ rotate: tiltInterpolation }] }]}
+                >
+                  {signData?.image ? (
+                    <Image source={signData.image} style={styles.compatImage} />
+                  ) : null}
+                  <Text style={styles.compatName}>{sign}</Text>
+                </Animated.View>
+              </TouchableOpacity>
             );
           })}
         </View>
@@ -205,6 +166,22 @@ const ResultsScreen = ({ route, navigation }) => {
       <Text style={styles.text}>
         {selectedSignDetails?.description ||
           'Each sign has unique traits that influence compatibility.'}
+      </Text>
+      <Text style={[styles.text, { marginTop: 4 }]}>
+        Element: {selectedSignDetails?.element} • Strengths: {selectedSignDetails?.strengths.join(', ')}
+      </Text>
+      <Text style={[styles.text, { marginTop: 4 }]}>
+        Weaknesses: {selectedSignDetails?.weaknesses.join(', ')}
+      </Text>
+      <Text style={[styles.text, { marginTop: 4 }]}>Love: {selectedSignDetails?.love}</Text>
+      <Text style={[styles.text, { marginTop: 4 }]}>
+        Friendship: {selectedSignDetails?.friendship}
+      </Text>
+      <Text style={[styles.text, { marginTop: 4 }]}>
+        Career: {selectedSignDetails?.career}
+      </Text>
+      <Text style={[styles.text, { marginTop: 4 }]}>
+        Mood: {selectedSignDetails?.mood} | Match score: {selectedSignDetails?.compatibility}%
       </Text>
       <Text style={[styles.text, { marginTop: theme.spacing.small }]}>
         {loading ? 'Loading live insight...' : apiMessage || apiError}

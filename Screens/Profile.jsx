@@ -1,20 +1,46 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TextInput } from 'react-native';
 import { Card, Chip } from 'react-native-elements';
 import { zodiacSigns } from '../data/zodiacData';
 import MatchCard from '../components/MatchCard';
 import PrimaryButton from '../components/PrimaryButton';
 import theme from '../color/style';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ProfileScreen = ({ route, navigation }) => {
-  const { name = 'Guest', selectedSign = 'Unknown', profile = {} } = route?.params || {};
-  const [about, setAbout] = useState(profile.about || 'Add a few lines about yourself...');
+  const initialProfile = route?.params?.profile || {};
+  const [profile, setProfile] = useState(initialProfile);
+  const [about, setAbout] = useState(initialProfile.about || 'Add a few lines about yourself...');
+  const name = profile.name || 'Guest';
+  const selectedSign = profile.autoSign || route?.params?.selectedSign || 'Unknown';
 
   const signData = useMemo(() => zodiacSigns.find((s) => s.name === selectedSign), [selectedSign]);
   const matches = useMemo(
     () => (signData ? zodiacSigns.filter((s) => signData.compatibleSigns.includes(s.name)) : []),
     [signData],
   );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadProfile = async () => {
+        const stored = await AsyncStorage.getItem('@astromatch:profile');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setProfile(parsed);
+          setAbout(parsed.about || 'Add a few lines about yourself...');
+        }
+      };
+      loadProfile();
+    }, []),
+  );
+
+  const saveAbout = async (text) => {
+    setAbout(text);
+    const next = { ...profile, about: text };
+    setProfile(next);
+    await AsyncStorage.setItem('@astromatch:profile', JSON.stringify(next));
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -29,9 +55,20 @@ const ProfileScreen = ({ route, navigation }) => {
             <Text style={styles.meta}>{profile.email}</Text>
             <Text style={styles.meta}>{profile.dob}</Text>
             <Text style={styles.meta}>{profile.gender}</Text>
-            {profile.relationshipType ? (
+            {Array.isArray(profile.relationshipType) && profile.relationshipType.length
+              ? profile.relationshipType.map((rel) => (
+                <Chip
+                  key={rel}
+                  title={rel}
+                  buttonStyle={{ backgroundColor: theme.colors.overlay }}
+                  titleStyle={{ color: theme.colors.text }}
+                  containerStyle={{ marginTop: 6, alignSelf: 'flex-start' }}
+                />
+              ))
+              : null}
+            {profile.relationshipTypeOther ? (
               <Chip
-                title={profile.relationshipType}
+                title={profile.relationshipTypeOther}
                 buttonStyle={{ backgroundColor: theme.colors.overlay }}
                 titleStyle={{ color: theme.colors.text }}
                 containerStyle={{ marginTop: 6, alignSelf: 'flex-start' }}
@@ -43,7 +80,7 @@ const ProfileScreen = ({ route, navigation }) => {
         <Text style={styles.subHeader}>About me</Text>
         <TextInput
           value={about}
-          onChangeText={setAbout}
+          onChangeText={saveAbout}
           multiline
           style={styles.aboutInput}
           placeholder="Share what makes you unique..."
@@ -58,6 +95,8 @@ const ProfileScreen = ({ route, navigation }) => {
         <Text style={[styles.body, { marginTop: 8 }]}>
           Compatible with: {signData?.compatibleSigns.join(', ')}
         </Text>
+        <Text style={[styles.body, { marginTop: 8 }]}>Element: {signData?.element}</Text>
+        <Text style={[styles.body, { marginTop: 8 }]}>Mood: {signData?.mood}</Text>
       </Card>
 
       <Text style={[styles.subHeader, { textAlign: 'center' }]}>Best Matches</Text>
@@ -67,9 +106,7 @@ const ProfileScreen = ({ route, navigation }) => {
             key={sign.id}
             sign={sign}
             onPress={() =>
-              navigation.navigate('Messages', {
-                signName: sign.name,
-              })
+              navigation.navigate('CompatibleUsers', { sign: sign.name, profile })
             }
           />
         ))}
@@ -78,6 +115,11 @@ const ProfileScreen = ({ route, navigation }) => {
       <PrimaryButton
         title="View Favorites"
         onPress={() => navigation.navigate('Favorites')}
+      />
+      <PrimaryButton
+        title="Edit Profile"
+        onPress={() => navigation.navigate('CreateProfile', { profile })}
+        style={{ backgroundColor: theme.colors.secondary }}
       />
     </ScrollView>
   );

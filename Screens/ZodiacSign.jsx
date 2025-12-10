@@ -8,7 +8,7 @@ import theme from '../color/style';
 
 
 const ZodiacSignScreen = ({ navigation, route }) => {
-  const [selectedSign, setSelectedSign] = useState(null);
+  const [selectedSign, setSelectedSign] = useState(route.params?.preselectedSign || null);
   const [fadeAnim] = useState(new Animated.Value(0));
 
   const handleSignSelection = (sign) => {
