@@ -7,8 +7,8 @@ import theme from '../color/style';
 
 const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
 
-const CompatibleUsers = ({ route }) => {
-  const { sign, profile } = route.params || {};
+const CompatibleUsers = ({ route, navigation }) => {
+  const { sign } = route.params || {};
   const [favorites, setFavorites] = useState([]);
 
   const filtered = useMemo(
@@ -32,6 +32,24 @@ const CompatibleUsers = ({ route }) => {
     await AsyncStorage.setItem(FAVORITE_PROFILES_KEY, JSON.stringify(updated));
   };
 
+  const openProfile = (user) => {
+    navigation.navigate('UserProfile', { user });
+  };
+
+  const startChat = (user) => {
+    navigation.navigate('ChatThread', {
+      thread: {
+        id: user.id,
+        signName: user.name,
+        lastMessage: user.threadHistory?.slice(-1)[0]?.text || 'Say hi and break the ice.',
+        history:
+          user.threadHistory && user.threadHistory.length
+            ? user.threadHistory
+            : [{ id: `${user.id}-hello`, from: 'them', text: 'Hey there! Ready to vibe?' }],
+      },
+    });
+  };
+
   const renderItem = ({ item }) => {
     const isFav = favorites.includes(item.id);
     return (
@@ -50,6 +68,14 @@ const CompatibleUsers = ({ route }) => {
               type="font-awesome"
               color={isFav ? theme.colors.highlight : theme.colors.text}
             />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.actions}>
+          <TouchableOpacity style={styles.pill} onPress={() => openProfile(item)}>
+            <Text style={styles.pillText}>View profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.pill, styles.pillSecondary]} onPress={() => startChat(item)}>
+            <Text style={[styles.pillText, { color: '#fff' }]}>Message</Text>
           </TouchableOpacity>
         </View>
       </Card>
@@ -99,5 +125,26 @@ const styles = StyleSheet.create({
   },
   body: {
     ...theme.textStyles.body,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+    marginTop: theme.spacing.small,
+  },
+  pill: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.borderColor,
+    backgroundColor: theme.colors.cardBackground,
+  },
+  pillSecondary: {
+    backgroundColor: theme.colors.secondary,
+    borderColor: 'transparent',
+  },
+  pillText: {
+    ...theme.textStyles.subtitle,
   },
 });

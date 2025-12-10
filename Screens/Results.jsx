@@ -85,6 +85,24 @@ const ResultsScreen = ({ route, navigation }) => {
     loadFavorites();
   }, []);
 
+  const openProfile = (user) => {
+    navigation.navigate('UserProfile', { user });
+  };
+
+  const startChat = (user) => {
+    navigation.navigate('ChatThread', {
+      thread: {
+        id: user.id,
+        signName: user.name,
+        lastMessage: user.threadHistory?.slice(-1)[0]?.text || 'Say hi and break the ice.',
+        history:
+          user.threadHistory && user.threadHistory.length
+            ? user.threadHistory
+            : [{ id: `${user.id}-hello`, from: 'them', text: 'Hey there! Ready to vibe?' }],
+      },
+    });
+  };
+
   const toggleProfileFavorite = async (profileId) => {
     const updated = favoriteProfiles.includes(profileId)
       ? favoriteProfiles.filter((id) => id !== profileId)
@@ -111,15 +129,18 @@ const ResultsScreen = ({ route, navigation }) => {
             />
           </TouchableOpacity>
         </View>
-        <Text style={styles.cardTagline}>{item.catchPhrase}</Text>
-        <Text style={styles.cardInsight}>{item.insight}</Text>
+        <Text style={styles.cardTagline}>{item.catchPhrase || item.about}</Text>
+        <Text style={styles.cardInsight}>{item.insight || 'High vibes and easy conversation.'}</Text>
         <View style={styles.cardActions}>
           <PrimaryButton
             title="View"
-            onPress={() =>
-              navigation.navigate('CompatibleUsers', { sign: item.sign, profile: route.params?.profile })
-            }
+            onPress={() => openProfile(item)}
             style={styles.actionButton}
+          />
+          <PrimaryButton
+            title="Message"
+            onPress={() => startChat(item)}
+            style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
           />
         </View>
       </Card>

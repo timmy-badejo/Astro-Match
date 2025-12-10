@@ -22,6 +22,7 @@ import MessagesScreen from './Screens/Messages';
 import SettingsScreen from './Screens/Settings';
 import ChatThread from './Screens/ChatThread';
 import CompatibleUsers from './Screens/CompatibleUsers';
+import UserProfile from './Screens/UserProfile';
 import theme from './color/style';
 import { ThemeProvider, useAppTheme } from './context/ThemeContext';
 
@@ -143,6 +144,11 @@ const ThemedApp = ({ fontsLoaded }) => {
             name="CompatibleUsers"
             component={CompatibleUsers}
             options={{ title: 'Compatible users' }}
+          />
+          <Stack.Screen
+            name="UserProfile"
+            component={UserProfile}
+            options={{ title: 'Profile' }}
           />
         </Stack.Navigator>
       </NavigationContainer>
