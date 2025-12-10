@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { Appearance } from 'react-native';
+import { Appearance, LayoutAnimation, UIManager, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { lightTheme, darkTheme, navLightTheme, navDarkTheme } from '../color/themes';
 
@@ -7,15 +7,21 @@ const STORAGE_KEY = '@astromatch:theme';
 
 const ThemeContext = createContext({
   mode: 'system',
-  theme: darkTheme,
-  navTheme: navDarkTheme,
+  theme: lightTheme,
+  navTheme: navLightTheme,
   setMode: () => {},
 });
 
 export const ThemeProvider = ({ children }) => {
-  const systemScheme = Appearance.getColorScheme() || 'dark';
+  const [systemScheme, setSystemScheme] = useState(Appearance.getColorScheme() || 'dark');
   const [mode, setMode] = useState('system');
   const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -25,6 +31,16 @@ export const ThemeProvider = ({ children }) => {
     };
     load();
   }, []);
+
+  useEffect(() => {
+    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+      setSystemScheme(colorScheme || 'dark');
+      if (mode === 'system') {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      }
+    });
+    return () => subscription?.remove?.();
+  }, [mode]);
 
   const appliedMode = mode === 'system' ? systemScheme : mode;
   const theme = appliedMode === 'light' ? lightTheme : darkTheme;
@@ -36,6 +52,7 @@ export const ThemeProvider = ({ children }) => {
       theme,
       navTheme,
       setMode: async (next) => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setMode(next);
         await AsyncStorage.setItem(STORAGE_KEY, next);
       },

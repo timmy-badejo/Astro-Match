@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import theme from '../color/style';
+import { useAppTheme } from '../context/ThemeContext';
 
 const PrimaryButton = ({ title, onPress, disabled = false, style, textStyle }) => {
+  const { theme } = useAppTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
   return (
     <TouchableOpacity
       style={[
@@ -20,22 +23,24 @@ const PrimaryButton = ({ title, onPress, disabled = false, style, textStyle }) =
 };
 
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: theme.buttonStyles.backgroundColor,
-    paddingVertical: theme.buttonStyles.paddingVertical,
-    paddingHorizontal: theme.buttonStyles.paddingHorizontal,
-    borderRadius: theme.buttonStyles.borderRadius,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: theme.spacing.small,
-    ...theme.shadows.light,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  text: {
-    ...theme.textStyles.button,
-  },
-});
+const createStyles = (th) =>
+  StyleSheet.create({
+    button: {
+      backgroundColor: th.colors.primary,
+      paddingVertical: th.spacing.md,
+      paddingHorizontal: th.spacing.lg,
+      borderRadius: th.borderRadius.medium,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginVertical: th.spacing.sm,
+      ...th.shadows.light,
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    text: {
+      ...th.textStyles.button,
+    },
+  });
 
 export default PrimaryButton;
