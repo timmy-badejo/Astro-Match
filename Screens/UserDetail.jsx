@@ -8,6 +8,7 @@ import ElementBadge from '../components/ElementBadge';
 import CompatibilityMeter from '../components/CompatibilityMeter';
 import PrimaryButton from '../components/PrimaryButton';
 import { getPremiumStatus, FREE_FAVORITE_LIMIT } from '../utils/premiumService';
+import { incrementProfileView, recordActivity } from '../utils/analyticsService';
 
 const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
 
@@ -30,6 +31,8 @@ const UserDetail = ({ route, navigation }) => {
       setPremium(!!prem.active);
     };
     loadFavs();
+    incrementProfileView(user?.id || 'unknown');
+    recordActivity('view_user_profile');
   }, []);
 
   if (!user) {

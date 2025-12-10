@@ -9,6 +9,7 @@ import theme from '../color/style';
 import { mockUsers } from '../data/mockUsers';
 import { getPremiumStatus, FREE_FAVORITE_LIMIT } from '../utils/premiumService';
 import { computeMatchScore } from '../utils/advancedMatchingService';
+import { recordMatchSuccess, recordActivity } from '../utils/analyticsService';
 
 const FAVORITES_KEY = '@astromatch:favorites';
 const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
@@ -165,6 +166,11 @@ const ResultsScreen = ({ route, navigation }) => {
             title="Message"
             onPress={() => startChat(item)}
             style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
+          />
+          <PrimaryButton
+            title="Mark as success"
+            onPress={() => recordMatchSuccess().then(() => recordActivity('match_success'))}
+            style={[styles.actionButton, { backgroundColor: theme.colors.primary }]}
           />
         </View>
       </Card>

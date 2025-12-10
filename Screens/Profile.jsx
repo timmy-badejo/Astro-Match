@@ -8,6 +8,7 @@ import theme from '../color/style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { getStreak, getQuizBest, getFavoritesCount, computeBadges } from '../utils/gamificationService';
+import { getProfileViews, getMatchSuccessCount, getActivityLog } from '../utils/analyticsService';
 
 const ProfileScreen = ({ route, navigation }) => {
   const initialProfile = route?.params?.profile || {};
@@ -15,6 +16,9 @@ const ProfileScreen = ({ route, navigation }) => {
   const [about, setAbout] = useState(initialProfile.about || 'Add a few lines about yourself...');
   const [streak, setStreak] = useState({ count: 0, lastCheck: null });
   const [badges, setBadges] = useState([]);
+  const [views, setViews] = useState(0);
+  const [matches, setMatches] = useState(0);
+  const [activity, setActivity] = useState([]);
   const name = profile.name || 'Guest';
   const selectedSign = profile.autoSign || route?.params?.selectedSign || 'Unknown';
 
@@ -36,8 +40,14 @@ const ProfileScreen = ({ route, navigation }) => {
         const streakData = await getStreak();
         const quizBest = await getQuizBest();
         const favoritesCount = await getFavoritesCount();
+        const viewData = await getProfileViews();
+        const matchCount = await getMatchSuccessCount();
+        const activityLog = await getActivityLog();
         setStreak(streakData);
         setBadges(computeBadges({ streak: streakData.count, quizBest, favoritesCount }));
+        setViews(viewData.total);
+        setMatches(matchCount);
+        setActivity(activityLog);
       };
       loadProfile();
     }, []),
@@ -111,6 +121,8 @@ const ProfileScreen = ({ route, navigation }) => {
         <Text style={styles.subHeader}>Progress</Text>
         <Text style={styles.body}>Daily streak: {streak.count} day{streak.count === 1 ? '' : 's'}</Text>
         <Text style={styles.body}>Last check: {streak.lastCheck || '—'}</Text>
+        <Text style={styles.body}>Profile views: {views}</Text>
+        <Text style={styles.body}>Matches marked success: {matches}</Text>
         <Text style={[styles.subHeader, { marginTop: theme.spacing.small }]}>Badges</Text>
         <View style={styles.badgeRow}>
           {badges.map((b) => (
@@ -120,6 +132,12 @@ const ProfileScreen = ({ route, navigation }) => {
             </View>
           ))}
         </View>
+        <Text style={[styles.subHeader, { marginTop: theme.spacing.small }]}>Recent activity</Text>
+        {activity.slice(0, 5).map((entry) => (
+          <Text key={entry.ts + entry.event} style={styles.body}>
+            {entry.event} — {new Date(entry.ts).toLocaleString()}
+          </Text>
+        ))}
       </Card>
 
       <Text style={[styles.subHeader, { textAlign: 'center' }]}>Best Matches</Text>
