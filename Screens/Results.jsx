@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, ScrollView, Animated, Easing, Image } from 'react-native';
 import { Card, Avatar, Icon } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PrimaryButton from '../components/PrimaryButton';
@@ -51,6 +51,7 @@ const ResultsScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState('');
   const [favoriteProfiles, setFavoriteProfiles] = useState([]);
+  const tiltAnim = useRef(new Animated.Value(0)).current;
 
   if (!selectedSign) {
     return (
@@ -88,10 +89,26 @@ const ResultsScreen = ({ route, navigation }) => {
       }
     };
     loadMessage();
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(tiltAnim, {
+          toValue: 1,
+          duration: 2200,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+        Animated.timing(tiltAnim, {
+          toValue: 0,
+          duration: 2200,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
     return () => {
       isMounted = false;
     };
-  }, [selectedSign]);
+  }, [selectedSign, tiltAnim]);
 
   useEffect(() => {
     const loadFavorites = async () => {
@@ -101,21 +118,6 @@ const ResultsScreen = ({ route, navigation }) => {
     };
     loadFavorites();
   }, []);
-
-  const addToFavorites = async () => {
-    try {
-      const stored = await AsyncStorage.getItem(FAVORITES_KEY);
-      const existing = stored ? JSON.parse(stored) : [];
-      if (!existing.includes(selectedSign)) {
-        const updated = [...existing, selectedSign];
-        await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
-      }
-      Alert.alert('Saved', `${selectedSign} added to your favorites.`);
-    } catch (e) {
-      console.log(e);
-      Alert.alert('Error', 'Could not save favorite. Please try again.');
-    }
-  };
 
   const toggleProfileFavorite = async (profileId) => {
     const updated = favoriteProfiles.includes(profileId)
@@ -168,17 +170,33 @@ const ResultsScreen = ({ route, navigation }) => {
     );
   };
 
+  const tiltInterpolation = tiltAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['-6deg', '6deg'],
+  });
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
       <Text style={styles.header}>Compatibility results for {selectedSign}</Text>
 
       <Text style={styles.subHeader}>Compatible Signs:</Text>
       {compatibleSigns.length ? (
-        compatibleSigns.map((sign, index) => (
-          <Text key={index} style={styles.text}>
-            {sign}
-          </Text>
-        ))
+        <View style={styles.compatRow}>
+          {compatibleSigns.map((sign) => {
+            const signData = zodiacSigns.find((s) => s.name === sign);
+            return (
+              <Animated.View
+                key={sign}
+                style={[styles.compatCard, { transform: [{ rotate: tiltInterpolation }] }]}
+              >
+                {signData?.image ? (
+                  <Image source={signData.image} style={styles.compatImage} />
+                ) : null}
+                <Text style={styles.compatName}>{sign}</Text>
+              </Animated.View>
+            );
+          })}
+        </View>
       ) : (
         <Text style={styles.text}>No compatibility data available.</Text>
       )}
@@ -194,18 +212,20 @@ const ResultsScreen = ({ route, navigation }) => {
       {loading && <ActivityIndicator color={theme.colors.primary} style={{ marginTop: 6 }} />}
       {apiError ? <Text style={styles.error}>{apiError}</Text> : null}
 
-      <PrimaryButton title="Add to Favorites" onPress={addToFavorites} />
-
       <Text style={[styles.subHeader, { marginTop: theme.spacing.large }]}>
         People you might vibe with
       </Text>
+      <Text style={styles.helperText}>
+        Suggested matches based on compatibility. Tap heart to save for later or view to see details.
+      </Text>
       {candidateProfiles.length ? (
-        <FlatList
-          data={candidateProfiles}
-          keyExtractor={(item) => item.id}
-          renderItem={renderProfileCard}
-          contentContainerStyle={{ paddingVertical: theme.spacing.small }}
-        />
+        <View style={styles.cardsGrid}>
+          {candidateProfiles.map((p) => (
+            <View key={p.id} style={styles.cardWrapper}>
+              {renderProfileCard({ item: p })}
+            </View>
+          ))}
+        </View>
       ) : (
         <Text style={styles.text}>No suggested profiles for these signs yet.</Text>
       )}
@@ -226,7 +246,7 @@ const ResultsScreen = ({ route, navigation }) => {
         }
         style={{ backgroundColor: theme.colors.secondary }}
       />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -253,10 +273,52 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     marginTop: 4,
   },
+  helperText: {
+    ...theme.textStyles.subtitle,
+    marginBottom: theme.spacing.small,
+  },
+  cardsGrid: {
+    flexDirection: 'column',
+    gap: theme.spacing.medium,
+    marginTop: theme.spacing.small,
+  },
+  compatRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.small,
+    marginTop: theme.spacing.small,
+  },
+  compatCard: {
+    width: 110,
+    height: 110,
+    borderRadius: 16,
+    backgroundColor: theme.colors.cardBackground,
+    borderColor: theme.colors.borderColor,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    ...theme.shadows.light,
+  },
+  compatImage: {
+    width: 52,
+    height: 52,
+    marginBottom: 6,
+    resizeMode: 'contain',
+  },
+  compatName: {
+    ...theme.textStyles.subtitle,
+    textAlign: 'center',
+  },
+  cardWrapper: {
+    width: '100%',
+  },
   card: {
     backgroundColor: theme.colors.cardBackground,
     borderRadius: theme.borderRadius.medium,
     borderColor: theme.colors.borderColor,
+    width: '100%',
+    ...theme.shadows.light,
   },
   cardHeader: {
     flexDirection: 'row',

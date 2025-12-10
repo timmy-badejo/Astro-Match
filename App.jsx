@@ -1,6 +1,6 @@
 // App.js
 import React from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemeProvider } from 'react-native-elements';
 import { Nunito_400Regular, useFonts } from '@expo-google-fonts/nunito';
 import { Orbitron_700Bold } from '@expo-google-fonts/orbitron';
@@ -28,7 +28,7 @@ const Tab = createBottomTabNavigator();
 
 const MainTabs = () => (
   <Tab.Navigator
-    screenOptions={({ route }) => ({
+    screenOptions={({ route, navigation }) => ({
       headerShown: true,
       tabBarActiveTintColor: theme.colors.primary,
       tabBarInactiveTintColor: '#93A0C1',
@@ -36,6 +36,16 @@ const MainTabs = () => (
       headerStyle: { backgroundColor: theme.colors.background },
       headerTitleStyle: { color: theme.colors.text },
       headerTintColor: theme.colors.text,
+      headerLeft: route.name !== 'Home'
+        ? () => (
+          <TouchableOpacity
+            style={{ paddingHorizontal: theme.spacing.small }}
+            onPress={() => navigation.navigate('Home')}
+          >
+            <Ionicons name="arrow-back" size={22} color={theme.colors.text} />
+          </TouchableOpacity>
+        )
+        : undefined,
       tabBarIcon: ({ color, size }) => {
         const icons = {
           Home: 'home',
