@@ -27,6 +27,7 @@ import UserProfile from './Screens/UserProfile';
 import ZodiacDetail from './Screens/ZodiacDetail';
 import UserDetail from './Screens/UserDetail';
 import FilteredUserList from './Screens/FilteredUserList';
+import ZodiacQuiz from './Screens/ZodiacQuiz';
 import theme from './color/style';
 import { ThemeProvider, useAppTheme } from './context/ThemeContext';
 import * as Notifications from 'expo-notifications';
@@ -184,6 +185,11 @@ const ThemedApp = ({ fontsLoaded }) => {
             name="UserProfile"
             component={UserProfile}
             options={{ title: 'Profile' }}
+          />
+          <Stack.Screen
+            name="ZodiacQuiz"
+            component={ZodiacQuiz}
+            options={{ title: 'Zodiac quiz' }}
           />
         </Stack.Navigator>
       </NavigationContainer>

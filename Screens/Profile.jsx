@@ -7,11 +7,14 @@ import PrimaryButton from '../components/PrimaryButton';
 import theme from '../color/style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import { getStreak, getQuizBest, getFavoritesCount, computeBadges } from '../utils/gamificationService';
 
 const ProfileScreen = ({ route, navigation }) => {
   const initialProfile = route?.params?.profile || {};
   const [profile, setProfile] = useState(initialProfile);
   const [about, setAbout] = useState(initialProfile.about || 'Add a few lines about yourself...');
+  const [streak, setStreak] = useState({ count: 0, lastCheck: null });
+  const [badges, setBadges] = useState([]);
   const name = profile.name || 'Guest';
   const selectedSign = profile.autoSign || route?.params?.selectedSign || 'Unknown';
 
@@ -30,6 +33,11 @@ const ProfileScreen = ({ route, navigation }) => {
           setProfile(parsed);
           setAbout(parsed.about || 'Add a few lines about yourself...');
         }
+        const streakData = await getStreak();
+        const quizBest = await getQuizBest();
+        const favoritesCount = await getFavoritesCount();
+        setStreak(streakData);
+        setBadges(computeBadges({ streak: streakData.count, quizBest, favoritesCount }));
       };
       loadProfile();
     }, []),
@@ -97,6 +105,21 @@ const ProfileScreen = ({ route, navigation }) => {
         </Text>
         <Text style={[styles.body, { marginTop: 8 }]}>Element: {signData?.element}</Text>
         <Text style={[styles.body, { marginTop: 8 }]}>Mood: {signData?.mood}</Text>
+      </Card>
+
+      <Card containerStyle={styles.card}>
+        <Text style={styles.subHeader}>Progress</Text>
+        <Text style={styles.body}>Daily streak: {streak.count} day{streak.count === 1 ? '' : 's'}</Text>
+        <Text style={styles.body}>Last check: {streak.lastCheck || '—'}</Text>
+        <Text style={[styles.subHeader, { marginTop: theme.spacing.small }]}>Badges</Text>
+        <View style={styles.badgeRow}>
+          {badges.map((b) => (
+            <View key={b.id} style={styles.badge}>
+              <Text style={styles.badgeLabel}>{b.label}</Text>
+              <Text style={styles.badgeDesc}>{b.desc}</Text>
+            </View>
+          ))}
+        </View>
       </Card>
 
       <Text style={[styles.subHeader, { textAlign: 'center' }]}>Best Matches</Text>
@@ -184,6 +207,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-evenly',
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.small,
+    marginTop: theme.spacing.small,
+  },
+  badge: {
+    padding: theme.spacing.small,
+    borderRadius: theme.borderRadius.medium,
+    backgroundColor: theme.colors.overlay,
+    minWidth: '45%',
+  },
+  badgeLabel: {
+    ...theme.textStyles.subtitle,
+    fontWeight: '700',
+  },
+  badgeDesc: {
+    ...theme.textStyles.small,
   },
 });
 

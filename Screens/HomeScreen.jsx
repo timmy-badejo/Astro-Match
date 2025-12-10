@@ -1,13 +1,16 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Share } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Share, Alert } from 'react-native';
 import { Card, Avatar, ListItem, Icon } from 'react-native-elements';
 import PrimaryButton from '../components/PrimaryButton';
 import { zodiacSigns } from '../data/zodiacData';
 import { successStories } from '../data/successStories';
 import theme from '../color/style';
+import { checkInToday, getStreak } from '../utils/gamificationService';
 
 const HomeScreen = ({ route, navigation }) => {
   const { name = 'Guest', zodiacSign = 'Your Sign' } = route?.params || {};
+  const [streak, setStreak] = useState({ count: 0, lastCheck: null });
+  const [checkedToday, setCheckedToday] = useState(false);
 
   const dailyTip = useMemo(() => {
     const tips = [
@@ -30,6 +33,26 @@ const HomeScreen = ({ route, navigation }) => {
       });
     } catch (e) {
       // no-op
+    }
+  };
+
+  useEffect(() => {
+    const loadStreak = async () => {
+      const data = await getStreak();
+      setStreak(data);
+      setCheckedToday(data.lastCheck === new Date().toISOString().slice(0, 10));
+    };
+    loadStreak();
+  }, []);
+
+  const handleCheckIn = async () => {
+    const updated = await checkInToday();
+    setStreak(updated);
+    setCheckedToday(true);
+    if (!updated.alreadyChecked) {
+      Alert.alert('Checked in!', `Streak is now ${updated.count} day${updated.count === 1 ? '' : 's'}.`);
+    } else {
+      Alert.alert('Already checked in', 'Come back tomorrow to keep the streak going.');
     }
   };
 
@@ -101,7 +124,23 @@ const HomeScreen = ({ route, navigation }) => {
             onPress={inviteFriends}
             style={styles.smallButton}
           />
+          <PrimaryButton
+            title="Zodiac Quiz"
+            onPress={() => navigation.navigate('ZodiacQuiz')}
+            style={styles.smallButton}
+          />
         </View>
+      </Card>
+
+      <Card containerStyle={styles.card}>
+        <Card.Title style={styles.cardTitle}>Daily Check-in</Card.Title>
+        <Text style={styles.body}>Streak: {streak.count} day{streak.count === 1 ? '' : 's'}</Text>
+        <Text style={styles.body}>Last check: {streak.lastCheck || '—'}</Text>
+        <PrimaryButton
+          title={checkedToday ? 'Checked in today' : 'Check in now'}
+          onPress={handleCheckIn}
+          disabled={checkedToday}
+        />
       </Card>
 
       <Card containerStyle={styles.card}>
