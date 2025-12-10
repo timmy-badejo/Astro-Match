@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: theme.spacing.large,
-    backgroundColor: '#060B3A',
+    backgroundColor: theme.colors.background,
     paddingBottom: theme.spacing.xlarge,
   },
   title: {
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     ...theme.textStyles.subtitle,
-    color: '#fff',
+    color: theme.colors.text,
     marginBottom: 4,
   },
   chipRow: {
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: theme.borderRadius.large,
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: theme.colors.text,
     marginRight: 8,
   },
   chipSelected: {
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.primary,
   },
   chipText: {
-    color: '#fff',
+    color: theme.colors.text,
   },
   chipTextSelected: {
     color: '#fff',
@@ -335,29 +335,37 @@ const styles = StyleSheet.create({
   radioRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    backgroundColor: theme.colors.cardBackground,
+    borderRadius: theme.borderRadius.medium,
+    borderWidth: 1,
+    borderColor: theme.colors.borderColor,
+    marginBottom: 8,
   },
-  radioRowSelected: {},
+  radioRowSelected: {
+    borderColor: theme.colors.primary,
+  },
   radioOuter: {
     width: 18,
     height: 18,
     borderRadius: 9,
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: theme.colors.text,
     marginRight: 8,
   },
   radioOuterSelected: {
-    borderColor: '#5A3DFF',
+    borderColor: theme.colors.primary,
   },
   radioInner: {
     flex: 1,
     margin: 3,
     borderRadius: 9,
-    backgroundColor: '#5A3DFF',
+    backgroundColor: theme.colors.primary,
   },
   radioLabel: {
     ...theme.textStyles.body,
-    color: '#fff',
+    color: theme.colors.text,
   },
   errorText: {
     color: theme.colors.error,
