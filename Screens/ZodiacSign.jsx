@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, Animated } from 'react-native';
 import ZodiacSignList from '../components/ZodiacSignList';
 import PrimaryButton from '../components/PrimaryButton';
-import { responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions';
 import theme from '../color/style';
+import { scale, verticalScale } from '../utils/scale';
 
 
 const ZodiacSignScreen = ({ navigation, route }) => {
@@ -57,26 +57,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: responsiveWidth(5),
+    padding: scale(20),
     backgroundColor: theme.colors.background,
   },
   logo: {
-    width: responsiveWidth(40),
-    height: responsiveWidth(40),
-    marginBottom: responsiveHeight(3),
+    width: scale(172),
+    height: scale(172),
+    marginBottom: verticalScale(20),
   },
   header: {
     ...theme.textStyles.header,
-    marginBottom: responsiveHeight(3),
+    marginBottom: verticalScale(18),
     color: theme.colors.text,
   },
   button: {
-    width: responsiveWidth(80),
-    height: responsiveHeight(7),
+    width: '100%',
+    height: verticalScale(52),
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: theme.borderRadius.medium,
-    marginVertical: responsiveHeight(1),
+    marginVertical: verticalScale(8),
   },
   buttonText: {
     color: '#fff',
