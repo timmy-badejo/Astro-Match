@@ -8,12 +8,14 @@ import { fetchCompatibilityMessage } from '../api/astroApi';
 import theme from '../color/style';
 import { mockUsers } from '../data/mockUsers';
 import { getPremiumStatus, FREE_FAVORITE_LIMIT } from '../utils/premiumService';
+import { computeMatchScore } from '../utils/advancedMatchingService';
 
 const FAVORITES_KEY = '@astromatch:favorites';
 const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
 
 const ResultsScreen = ({ route, navigation }) => {
   const { selectedSign } = route.params || {};
+  const userProfile = route.params?.profile || {};
   const [apiMessage, setApiMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState('');
@@ -37,10 +39,16 @@ const ResultsScreen = ({ route, navigation }) => {
     (sign) => sign.name === selectedSign
   );
   const compatibleSigns = selectedSignDetails?.compatibleSigns || [];
-  const candidateProfiles = useMemo(
-    () => mockUsers.filter((p) => compatibleSigns.includes(p.sign)).slice(0, 6),
-    [compatibleSigns],
-  );
+  const candidateProfiles = useMemo(() => {
+    const list = mockUsers
+      .filter((p) => compatibleSigns.includes(p.sign))
+      .map((p) => {
+        const { score, distanceKm } = computeMatchScore(userProfile, p);
+        return { ...p, matchScore: score, distanceKm };
+      })
+      .sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+    return list.slice(0, 6);
+  }, [compatibleSigns, userProfile]);
 
   useEffect(() => {
     let isMounted = true;
@@ -143,6 +151,10 @@ const ResultsScreen = ({ route, navigation }) => {
         </View>
         <Text style={styles.cardTagline}>{item.catchPhrase || item.about}</Text>
         <Text style={styles.cardInsight}>{item.insight || 'High vibes and easy conversation.'}</Text>
+        <Text style={styles.cardInsight}>Match score: {item.matchScore || item.compatibility}%</Text>
+        {item.distanceKm != null ? (
+          <Text style={styles.cardSubtitle}>{item.distanceKm.toFixed(0)} km away (approx)</Text>
+        ) : null}
         <View style={styles.cardActions}>
           <PrimaryButton
             title="View"

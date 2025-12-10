@@ -5,17 +5,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { mockUsers } from '../data/mockUsers';
 import theme from '../color/style';
 import { getPremiumStatus, FREE_FAVORITE_LIMIT } from '../utils/premiumService';
+import { computeMatchScore } from '../utils/advancedMatchingService';
 
 const FAVORITE_PROFILES_KEY = '@astromatch:favorite-profiles';
 
 const CompatibleUsers = ({ route, navigation }) => {
-  const { sign } = route.params || {};
+  const { sign, profile } = route.params || {};
   const [favorites, setFavorites] = useState([]);
   const [premium, setPremium] = useState(false);
 
   const filtered = useMemo(
-    () => mockUsers.filter((u) => u.sign === sign),
-    [sign],
+    () =>
+      mockUsers
+        .filter((u) => u.sign === sign)
+        .map((u) => {
+          const { score, distanceKm } = computeMatchScore(profile, u);
+          return { ...u, matchScore: score, distanceKm };
+        })
+        .sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0)),
+    [sign, profile],
   );
 
   useEffect(() => {
@@ -68,7 +76,10 @@ const CompatibleUsers = ({ route, navigation }) => {
           <View style={{ flex: 1, marginLeft: theme.spacing.small }}>
             <Text style={styles.title}>{item.name}</Text>
             <Text style={styles.subtitle}>{item.sign}</Text>
-            <Text style={styles.subtitle}>Compatibility: {item.compatibility}%</Text>
+            <Text style={styles.subtitle}>Match: {item.matchScore || item.compatibility}%</Text>
+            {item.distanceKm != null ? (
+              <Text style={styles.subtitle}>{item.distanceKm.toFixed(0)} km away</Text>
+            ) : null}
             <Text style={[styles.body, { marginTop: 4 }]} numberOfLines={2}>{item.about}</Text>
           </View>
           <TouchableOpacity onPress={() => toggleFavorite(item.id)}>

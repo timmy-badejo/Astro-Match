@@ -4,6 +4,7 @@ import { useAppTheme } from '../context/ThemeContext';
 import { mockUsers } from '../data/mockUsers';
 import UserCard from '../components/UserCard';
 import { getPremiumStatus } from '../utils/premiumService';
+import { computeMatchScore } from '../utils/advancedMatchingService';
 
 const FilteredUserList = ({ route, navigation }) => {
   const { theme } = useAppTheme();
@@ -12,6 +13,7 @@ const FilteredUserList = ({ route, navigation }) => {
   const [sort, setSort] = useState('compatibility');
   const [premium, setPremium] = useState(false);
   const [minCompat, setMinCompat] = useState(0);
+  const profile = route.params?.profile || {};
 
   useEffect(() => {
     const load = async () => {
@@ -21,14 +23,19 @@ const FilteredUserList = ({ route, navigation }) => {
     load();
   }, []);
 
-  const filtered = mockUsers.filter((u) => {
-    const signMatch = !sign || u.sign === sign;
-    const compatMatch = premium ? (u.compatibility || 0) >= minCompat : true;
-    return signMatch && compatMatch;
-  });
+  const filtered = mockUsers
+    .map((u) => {
+      const { score, distanceKm } = computeMatchScore(profile, u);
+      return { ...u, matchScore: score, distanceKm };
+    })
+    .filter((u) => {
+      const signMatch = !sign || u.sign === sign;
+      const compatMatch = premium ? (u.matchScore || u.compatibility || 0) >= minCompat : true;
+      return signMatch && compatMatch;
+    });
   const sorted = [...filtered].sort((a, b) => {
     if (sort === 'name') return a.name.localeCompare(b.name);
-    return (b.compatibility || 0) - (a.compatibility || 0);
+    return (b.matchScore || b.compatibility || 0) - (a.matchScore || a.compatibility || 0);
   });
 
   const renderItem = ({ item }) => (
