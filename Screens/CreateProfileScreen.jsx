@@ -38,11 +38,9 @@ const CreateProfileScreen = ({ navigation, route }) => {
 
   const formatDob = (value) => {
     const digits = value.replace(/\D/g, '').slice(0, 8);
-    const parts = [];
-    if (digits.length >= 4) parts.push(digits.slice(0, 4));
-    if (digits.length >= 5) parts.push(digits.slice(4, 6));
-    if (digits.length >= 7) parts.push(digits.slice(6, 8));
-    return parts.join('-');
+    if (digits.length <= 4) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+    return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`;
   };
 
   useEffect(() => {
@@ -207,6 +205,7 @@ const CreateProfileScreen = ({ navigation, route }) => {
           placeholder="YYYY-MM-DD"
           value={dob}
           onChangeText={(text) => setDob(formatDob(text))}
+          keyboardType="number-pad"
           editable
           error={errors.dob}
         />
