@@ -1,20 +1,25 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Share, Alert } from 'react-native';
 import { Card, Avatar, ListItem, Icon } from 'react-native-elements';
 import PrimaryButton from '../components/PrimaryButton';
 import { zodiacSigns } from '../data/zodiacData';
 import { successStories } from '../data/successStories';
-import { weeklyHoroscopes, monthlyHoroscopes, zodiacArticles, relationshipAdvice } from '../data/content';
 import theme from '../color/style';
 import { checkInToday, getStreak } from '../utils/gamificationService';
 import { getPremiumStatus } from '../utils/premiumService';
 import AdBanner from '../components/AdBanner';
+import { ContentService } from '../api/contentService';
 
 const HomeScreen = ({ route, navigation }) => {
   const { name = 'Guest', zodiacSign = 'Your Sign' } = route?.params || {};
   const [streak, setStreak] = useState({ count: 0, lastCheck: null });
   const [checkedToday, setCheckedToday] = useState(false);
   const [premium, setPremium] = useState(false);
+  const [weeklyContent, setWeeklyContent] = useState(null);
+  const [monthlyContent, setMonthlyContent] = useState(null);
+  const [articles, setArticles] = useState([]);
+  const [advice, setAdvice] = useState([]);
+  const contentServiceRef = useRef(new ContentService(process.env.EXPO_PUBLIC_HOROSCOPE_KEY));
 
   const dailyTip = useMemo(() => {
     const tips = [
@@ -50,6 +55,23 @@ const HomeScreen = ({ route, navigation }) => {
     };
     loadStreak();
   }, []);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      const svc = contentServiceRef.current;
+      const [weekly, monthly, art, tips] = await Promise.all([
+        svc.getWeeklyHoroscope(zodiacSign),
+        svc.getMonthlyHoroscope(zodiacSign),
+        svc.getArticles(5),
+        svc.getRelationshipAdvice(4),
+      ]);
+      setWeeklyContent(weekly);
+      setMonthlyContent(monthly);
+      setArticles(art);
+      setAdvice(tips);
+    };
+    loadContent();
+  }, [zodiacSign]);
 
   const handleCheckIn = async () => {
     const updated = await checkInToday();
@@ -91,14 +113,14 @@ const HomeScreen = ({ route, navigation }) => {
       <Card containerStyle={styles.card}>
         <Card.Title style={styles.cardTitle}>Weekly horoscope</Card.Title>
         <Text style={styles.body}>
-          {weeklyHoroscopes[zodiacSign] || 'Fresh energy is on the way. Stay open to new connections.'}
+          {weeklyContent?.overview || weeklyContent?.horoscope || 'Fresh energy is on the way. Stay open to new connections.'}
         </Text>
       </Card>
 
       <Card containerStyle={styles.card}>
         <Card.Title style={styles.cardTitle}>Monthly horoscope</Card.Title>
         <Text style={styles.body}>
-          {monthlyHoroscopes[zodiacSign] || 'This month rewards consistency and honest conversations.'}
+          {monthlyContent?.overview || monthlyContent?.horoscope || 'This month rewards consistency and honest conversations.'}
         </Text>
       </Card>
 
@@ -181,7 +203,7 @@ const HomeScreen = ({ route, navigation }) => {
 
       <Card containerStyle={styles.card}>
         <Card.Title style={styles.cardTitle}>Zodiac articles</Card.Title>
-        {zodiacArticles.map((article) => (
+        {articles.map((article) => (
           <ListItem key={article.id} bottomDivider containerStyle={styles.listItem}>
             <Icon name="book-open" type="feather" color={theme.colors.highlight} />
             <ListItem.Content>
@@ -195,8 +217,8 @@ const HomeScreen = ({ route, navigation }) => {
 
       <Card containerStyle={styles.card}>
         <Card.Title style={styles.cardTitle}>Relationship advice</Card.Title>
-        {relationshipAdvice.map((tip, idx) => (
-          <Text key={tip} style={styles.body}>{idx + 1}. {tip}</Text>
+        {advice.map((tip, idx) => (
+          <Text key={tip.id || idx} style={styles.body}>{idx + 1}. {tip.tip || tip}</Text>
         ))}
       </Card>
 
