@@ -1,7 +1,7 @@
 // App.js
 import React from 'react';
 import { ActivityIndicator, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { ThemeProvider } from 'react-native-elements';
+import { ThemeProvider as ElementsThemeProvider } from 'react-native-elements';
 import { Nunito_400Regular, useFonts } from '@expo-google-fonts/nunito';
 import { Orbitron_700Bold } from '@expo-google-fonts/orbitron';
 import { NavigationContainer } from '@react-navigation/native';
@@ -22,50 +22,54 @@ import MessagesScreen from './Screens/Messages';
 import SettingsScreen from './Screens/Settings';
 import ChatThread from './Screens/ChatThread';
 import theme from './color/style';
+import { ThemeProvider, useAppTheme } from './context/ThemeContext';
 
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const MainTabs = () => (
-  <Tab.Navigator
-    screenOptions={({ route, navigation }) => ({
-      headerShown: true,
-      tabBarActiveTintColor: theme.colors.primary,
-      tabBarInactiveTintColor: '#93A0C1',
-      tabBarStyle: { backgroundColor: theme.colors.cardBackground },
-      headerStyle: { backgroundColor: theme.colors.background },
-      headerTitleStyle: { color: theme.colors.text },
-      headerTintColor: theme.colors.text,
-      headerLeft: route.name !== 'Home'
-        ? () => (
-          <TouchableOpacity
-            style={{ paddingHorizontal: theme.spacing.small }}
-            onPress={() => navigation.navigate('Home')}
-          >
-            <Ionicons name="arrow-back" size={22} color={theme.colors.text} />
-          </TouchableOpacity>
-        )
-        : undefined,
-      tabBarIcon: ({ color, size }) => {
-        const icons = {
-          Home: 'home',
-          Favorites: 'heart',
-          Messages: 'chatbubbles',
-          Profile: 'person-circle',
-          Settings: 'settings',
-        };
-        return <Ionicons name={icons[route.name] || 'ellipse'} size={size} color={color} />;
-      },
-    })}
-  >
-    <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="Favorites" component={FavoritesScreen} />
-    <Tab.Screen name="Messages" component={MessagesScreen} />
-    <Tab.Screen name="Profile" component={ProfileScreen} />
-    <Tab.Screen name="Settings" component={SettingsScreen} />
-  </Tab.Navigator>
-);
+const MainTabs = () => {
+  const { theme: currentTheme } = useAppTheme();
+  return (
+    <Tab.Navigator
+      screenOptions={({ route, navigation }) => ({
+        headerShown: true,
+        tabBarActiveTintColor: currentTheme.colors.primary,
+        tabBarInactiveTintColor: currentTheme.textStyles.subtitle.color,
+        tabBarStyle: { backgroundColor: currentTheme.colors.cardBackground },
+        headerStyle: { backgroundColor: currentTheme.colors.background },
+        headerTitleStyle: { color: currentTheme.colors.text },
+        headerTintColor: currentTheme.colors.text,
+        headerLeft: route.name !== 'Home'
+          ? () => (
+            <TouchableOpacity
+              style={{ paddingHorizontal: currentTheme.spacing.small }}
+              onPress={() => navigation.navigate('Home')}
+            >
+              <Ionicons name="arrow-back" size={22} color={currentTheme.colors.text} />
+            </TouchableOpacity>
+          )
+          : undefined,
+        tabBarIcon: ({ color, size }) => {
+          const icons = {
+            Home: 'home',
+            Favorites: 'heart',
+            Messages: 'chatbubbles',
+            Profile: 'person-circle',
+            Settings: 'settings',
+          };
+          return <Ionicons name={icons[route.name] || 'ellipse'} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Favorites" component={FavoritesScreen} />
+      <Tab.Screen name="Messages" component={MessagesScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
+    </Tab.Navigator>
+  );
+};
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -73,24 +77,34 @@ export default function App() {
     Orbitron_700Bold,
   });
 
+  return (
+    <ThemeProvider>
+      <ThemedApp fontsLoaded={fontsLoaded} />
+    </ThemeProvider>
+  );
+}
+
+const ThemedApp = ({ fontsLoaded }) => {
+  const { theme: currentTheme, navTheme } = useAppTheme();
+
   if (!fontsLoaded) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+      <View style={[styles.loadingContainer, { backgroundColor: currentTheme.colors.background }]}>
+        <ActivityIndicator size="large" color={currentTheme.colors.primary} />
       </View>
     );
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <NavigationContainer>
+    <ElementsThemeProvider theme={currentTheme}>
+      <NavigationContainer theme={navTheme}>
         <Stack.Navigator
           initialRouteName="Splash"
           screenOptions={{
             headerShown: true,
-            headerStyle: { backgroundColor: theme.colors.background },
-            headerTitleStyle: { color: theme.colors.text },
-            headerTintColor: theme.colors.text,
+            headerStyle: { backgroundColor: currentTheme.colors.background },
+            headerTitleStyle: { color: currentTheme.colors.text },
+            headerTintColor: currentTheme.colors.text,
           }}
         >
           <Stack.Screen
@@ -136,9 +150,9 @@ export default function App() {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    </ThemeProvider>
+    </ElementsThemeProvider>
   );
-}
+};
 
 const styles = StyleSheet.create({
   loadingContainer: {
