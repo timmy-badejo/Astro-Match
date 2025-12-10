@@ -1,17 +1,64 @@
-import React, { useState, useMemo } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { Card, ListItem, CheckBox, Icon, ButtonGroup } from 'react-native-elements';
+import React, { useState, useMemo, useEffect } from 'react';
+import { View, StyleSheet, Text, Alert } from 'react-native';
+import { Card, ListItem, CheckBox, Icon, ButtonGroup, Switch } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppTheme } from '../context/ThemeContext';
+import {
+  defaultPrefs,
+  getPreferences,
+  savePreferences,
+  scheduleDailyHoroscope,
+  cancelDailyHoroscope,
+  triggerMatchAlert,
+  triggerMessageAlert,
+  hydrateNotifications,
+} from '../utils/notificationService';
 
 const SettingsScreen = () => {
   const { theme: currentTheme, mode, setMode } = useAppTheme();
-  const [notifications, setNotifications] = useState(true);
+  const [notifPrefs, setNotifPrefs] = useState(defaultPrefs);
   const [tips, setTips] = useState(true);
   const styles = useMemo(() => createStyles(currentTheme), [currentTheme]);
 
   const resetData = async () => {
     await AsyncStorage.clear();
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      const prefs = await getPreferences();
+      setNotifPrefs(prefs);
+      await hydrateNotifications();
+    };
+    load();
+  }, []);
+
+  const updatePref = async (key, value) => {
+    const next = { ...notifPrefs, [key]: value };
+    setNotifPrefs(next);
+    await savePreferences(next);
+  };
+
+  const toggleDailyHoroscope = async () => {
+    const next = !notifPrefs.dailyHoroscope;
+    await updatePref('dailyHoroscope', next);
+    if (next) {
+      await scheduleDailyHoroscope();
+    } else {
+      await cancelDailyHoroscope();
+    }
+  };
+
+  const toggleMatch = async () => {
+    const next = !notifPrefs.matchAlerts;
+    await updatePref('matchAlerts', next);
+    if (next) await triggerMatchAlert();
+  };
+
+  const toggleMessage = async () => {
+    const next = !notifPrefs.messageAlerts;
+    await updatePref('messageAlerts', next);
+    if (next) await triggerMessageAlert();
   };
 
   const themeButtons = ['System', 'Light', 'Dark'];
@@ -46,33 +93,36 @@ const SettingsScreen = () => {
       <Card containerStyle={styles.card}>
         <Card.Title style={styles.title}>Preferences</Card.Title>
         <ListItem bottomDivider containerStyle={styles.listItem}>
-          <Icon name="bell" type="feather" color={currentTheme.colors.highlight} />
+          <Icon name="sunrise" type="feather" color={currentTheme.colors.highlight} />
           <ListItem.Content>
-            <ListItem.Title style={styles.listTitle}>Push notifications</ListItem.Title>
+            <ListItem.Title style={styles.listTitle}>Daily horoscope</ListItem.Title>
             <ListItem.Subtitle style={styles.listSubtitle}>
-              Get alerts when compatibility updates or new messages arrive.
+              Get a notification each morning at 9:00.
             </ListItem.Subtitle>
           </ListItem.Content>
-          <CheckBox
-            checked={notifications}
-            onPress={() => setNotifications((v) => !v)}
-            containerStyle={styles.checkbox}
-          />
+          <Switch value={notifPrefs.dailyHoroscope} onValueChange={toggleDailyHoroscope} />
+        </ListItem>
+
+        <ListItem bottomDivider containerStyle={styles.listItem}>
+          <Icon name="bell" type="feather" color={currentTheme.colors.highlight} />
+          <ListItem.Content>
+            <ListItem.Title style={styles.listTitle}>New match alerts</ListItem.Title>
+            <ListItem.Subtitle style={styles.listSubtitle}>
+              Be notified when a compatible match appears.
+            </ListItem.Subtitle>
+          </ListItem.Content>
+          <Switch value={notifPrefs.matchAlerts} onValueChange={toggleMatch} />
         </ListItem>
 
         <ListItem containerStyle={styles.listItem}>
-          <Icon name="star" type="feather" color={currentTheme.colors.highlight} />
+          <Icon name="message-circle" type="feather" color={currentTheme.colors.highlight} />
           <ListItem.Content>
-            <ListItem.Title style={styles.listTitle}>Daily cosmic tips</ListItem.Title>
+            <ListItem.Title style={styles.listTitle}>Message notifications</ListItem.Title>
             <ListItem.Subtitle style={styles.listSubtitle}>
-              Show a daily nudge on the home screen to spark conversations.
+              Get a ping when new messages arrive.
             </ListItem.Subtitle>
           </ListItem.Content>
-          <CheckBox
-            checked={tips}
-            onPress={() => setTips((v) => !v)}
-            containerStyle={styles.checkbox}
-          />
+          <Switch value={notifPrefs.messageAlerts} onValueChange={toggleMessage} />
         </ListItem>
 
         <ListItem containerStyle={styles.listItem} onPress={resetData}>
@@ -123,10 +173,6 @@ const createStyles = (th) =>
     },
     listSubtitle: {
       ...th.textStyles.subtitle,
-    },
-    checkbox: {
-      backgroundColor: 'transparent',
-      borderWidth: 0,
     },
     buttonGroup: {
       borderColor: th.colors.borderColor,

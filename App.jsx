@@ -29,6 +29,7 @@ import UserDetail from './Screens/UserDetail';
 import FilteredUserList from './Screens/FilteredUserList';
 import theme from './color/style';
 import { ThemeProvider, useAppTheme } from './context/ThemeContext';
+import * as Notifications from 'expo-notifications';
 
 
 const Stack = createNativeStackNavigator();
@@ -82,6 +83,16 @@ export default function App() {
 
 const ThemedApp = ({ fontsLoaded }) => {
   const { theme: currentTheme, navTheme } = useAppTheme();
+
+  React.useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+      }),
+    });
+  }, []);
 
   if (!fontsLoaded) {
     return (
