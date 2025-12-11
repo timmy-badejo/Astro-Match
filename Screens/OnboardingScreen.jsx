@@ -59,7 +59,7 @@ const OnboardingScreen = ({ navigation }) => {
       />
       <PrimaryButton
         title="I already have a profile"
-        onPress={handleSkip}
+        onPress={() => navigation.replace('SignIn')}
         style={{ backgroundColor: theme.colors.secondary }}
       />
     </View>
