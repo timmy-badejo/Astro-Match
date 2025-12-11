@@ -33,7 +33,8 @@
         "image": "./vectors/splash-image.png",
         "resizeMode": "cover",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.anonymous.AstroMatch"
     },
     "web": {
       "favicon": "./vectors/favico.png"
