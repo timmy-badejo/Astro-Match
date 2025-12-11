@@ -22,7 +22,6 @@ const PrimaryButton = ({ title, onPress, disabled = false, style, textStyle }) =
   );
 };
 
-const styles = StyleSheet.create({
 const createStyles = (th) =>
   StyleSheet.create({
     button: {
