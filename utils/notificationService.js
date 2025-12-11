@@ -4,6 +4,9 @@ import { Alert, Platform } from 'react-native';
 
 const PREFS_KEY = '@astromatch:notif-prefs';
 const SCHEDULE_KEY = '@astromatch:notif-schedule';
+const isNotificationsAvailable =
+  !!Notifications?.scheduleNotificationAsync &&
+  !!Notifications?.getPermissionsAsync;
 
 export const defaultPrefs = {
   dailyHoroscope: false,
@@ -21,6 +24,10 @@ export const savePreferences = async (prefs) => {
 };
 
 const ensurePermissions = async () => {
+  if (!isNotificationsAvailable) {
+    console.warn('Notifications not available in this runtime (likely Expo Go).');
+    return false;
+  }
   const settings = await Notifications.getPermissionsAsync();
   if (settings?.granted) return true;
   const req = await Notifications.requestPermissionsAsync();
@@ -39,6 +46,7 @@ const getScheduled = async () => {
 const saveScheduled = async (obj) => AsyncStorage.setItem(SCHEDULE_KEY, JSON.stringify(obj));
 
 export const cancelDailyHoroscope = async () => {
+  if (!isNotificationsAvailable) return;
   const scheduled = await getScheduled();
   if (scheduled.dailyHoroscopeId) {
     await Notifications.cancelScheduledNotificationAsync(scheduled.dailyHoroscopeId);

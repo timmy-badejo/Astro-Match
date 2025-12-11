@@ -84,8 +84,14 @@ export default function App() {
 
 const ThemedApp = ({ fontsLoaded }) => {
   const { theme: currentTheme, navTheme } = useAppTheme();
+  const notificationsSupported =
+    typeof Notifications?.setNotificationHandler === 'function';
 
   React.useEffect(() => {
+    if (!notificationsSupported) {
+      console.warn('expo-notifications not available in this runtime (Expo Go). Skipping handler.');
+      return;
+    }
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
@@ -93,7 +99,7 @@ const ThemedApp = ({ fontsLoaded }) => {
         shouldSetBadge: false,
       }),
     });
-  }, []);
+  }, [notificationsSupported]);
 
   if (!fontsLoaded) {
     return (
